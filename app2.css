@@ -5,13 +5,19 @@
 			bottom: 33px;
 			left: 0px;
 			right: 0px;
-			background: blue;
+			background: url('preview.png');
 		}
+		html, body {
+  			height: 100%;
+  			overflow: auto;
+		}
+
+
 		#arrows{
 			max-width:100%; 
 			max-height:100%;
 		}
-		#begin_day {
+		#day_header {
 			position: relative;
 			top: 0px;
 			width: 100%;			
@@ -19,20 +25,21 @@
 			height: 15%;
 			margin:auto;
 		}
+		#day_container
+		{
+			position: relative;
+			width: 100%
+			background: green;
+			height: 85%;
+			overflow-y:scroll;
+			-webkit-overflow-scrolling: touch;
+		}
 		#mid_day { 
 			position: relative;
-			height: 10%;
+			height: 40%;
 			width: 100%;
 			background: red;
 			border-bottom: 1px solid;
-			margin:auto;
-		}
-		#end_day { 
-			position: relative;
-			bottom: 0px;
-			width: 100%;
-			background: green;
-			height: 10%;
 			margin:auto;
 		}
 	
