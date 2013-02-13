@@ -3,7 +3,3 @@ $(document).on("mobileinit", function(){
 });
 
 //onload
-$(function(){
-	var height = $("#day_header").height();
-	$("#day_header").css("line-height",height+"px");
-});
