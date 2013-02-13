@@ -43,28 +43,33 @@
 		#hours_container {
 			position: relative;
 			width: 10%;
-			height: 100%;
+			height: 1277px;
 			float: left;
 		}
 		#events_container {
 			position: relative;
 			width: 90%;
-			height: 100%;
+			height: 1277px;
 			float: left;
 		}
 		#mid_day { 
 			position: relative;
-			height: 10%;
+			height: 50px;
 			width: 100%;
 			background: #E8E8E8;
 			border-bottom: 1px dotted #505050;
 			margin:auto;
 		}
 		#events {
-			position: relative;
-			height: 100%;
-			width: 100%;
+			position: absolute;
+			top: 26px;
+			bottom: 28px;
+			left: 5%;
+			right: 5%;
 			background: red;
+			color:white;
+			padding-left:10px;
+			padding-top:5px;
 			-webkit-border-radius: 10px;
 			-moz-border-radius: 10px;
 			-o-border-radius: 10px;
@@ -74,7 +79,7 @@
 		}
 		#hour_label {
 			position: relative;
-			height: 10%;
+			height: 50px;
 			width: 100%;
 			background: #E8E8E8;
 			border-bottom: 1px dashed #E8E8E8;

@@ -3,7 +3,6 @@ $(function(){
 		$("#day_header").css("line-height",height+"px");
 		height = $("#hour_label").height();
 		$("#hour_label span").css("line-height",height+"px");
-		$("#events").css("bottom","0px");
 		
 		if ($("#day_header span").html() === "")
 		{
