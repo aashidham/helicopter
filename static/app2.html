@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>Time Management App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>       
+  <link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
+  <link rel="stylesheet" href="app2.css"/>
+  <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+  <script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
+  <script src="app2.js"></script>
+</head>
+
+<body>
+
+  <div data-role="page" id="list">
+    <div data-role="header" data-theme="b" data-position="fixed" data-id="footer">
+      <h1>List</h1>
+    </div>
+    <div data-role="content">
+      <p>Hello world! This is list.</p>
+    </div>
+    <div data-role="footer" data-theme="b" data-position="fixed" data-id="footer">
+        <div data-role="navbar">
+            <ul>
+                <li><a href="#list" class="ui-btn-active ui-state-persist">List</a></li>
+                <li><a href="#calendar">Calendar</a></li>
+            </ul>
+        </div>
+    </div>
+  </div>
+  
+  <div data-role="page" id="calendar">
+    <div data-role="header" data-theme="b" data-position="fixed" data-id="footer">
+      <h1>Calendar</h1>
+    </div>
+    <div data-role="content">
+		<div id="calendar_body">
+			<div id="day_header">
+				<img id="arrows" src="left.png"/><span>dslvkhlfkhflskhfdl</span><img id="arrows" style="float:right;" src="right.png"/>
+			</div>
+			<div id="day_container">
+			<div id="mid_day"></div>
+			<div id="mid_day"></div><div id="mid_day"></div><div id="mid_day"></div><div id="mid_day"></div><div id="mid_day"></div>
+			</div>
+		</div>
+    </div>
+    <div data-role="footer" data-theme="b" data-position="fixed" data-id="footer">
+        <div data-role="navbar">
+            <ul>
+                <li><a href="#list">List</a></li>
+                <li><a href="#calendar" class="ui-btn-active ui-state-persist">Calendar</a></li>
+            </ul>
+        </div>
+    </div>
+  </div>
+
+</body>
+</html>

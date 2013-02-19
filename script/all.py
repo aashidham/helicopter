@@ -2,7 +2,6 @@
 from werkzeug.wrappers import Response, Request
 from werkzeug.serving import run_simple
 import posixpath, urllib, os, mimetypes, json
-import get_events
 from feed.date.rfc3339 import *
 
 
@@ -17,19 +16,7 @@ def application(environ, start_response):
 	try:
 		f = open(path,'rb')
 	except IOError:
-		# check if url is one of the accepted ones
-		if "login" in request.path: 
-			response = Response()
-			response.status_code = 301
-			response.location = get_events.login()
-			return response(environ, start_response)
-		if "callback" in request.path:
-			json = get_events.callback(request.args.get("code"))
-			response = Response(json, mimetype="application/json")
-			return response(environ, start_response)		
-		# if not, 404 this sucker
-		response = Response()
-		response.status_code = 404
+		response = Response("404!", mimetype='text/html')
 		return response(environ, start_response)
 	if posixpath.splitext(path)[1] == ".py":
 		json = do_py_stuff(environ, start_response)
