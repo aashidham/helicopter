@@ -3,7 +3,7 @@ import Cookie
 import httplib2
 import StringIO
 import urlparse
-import sys, datetime, json
+import sys, datetime, json, hashlib, sqlite3
 from collections import defaultdict
 from feed.date.rfc3339 import *
 
@@ -35,11 +35,19 @@ def callback(code):
 	while request != None:
 		response = request.execute()
 		for event in response.get('items', []):
-			epoch_seconds = tf_from_timestamp(event["start"]["dateTime"])
-			currdate = datetime.date.fromtimestamp(epoch_seconds)
-			currdate = currdate.isoformat()
-			toReturn.append({"summary":event["summary"],"start":event["start"]["dateTime"],"end":event["end"]["dateTime"]})
+			start = tf_from_timestamp(event["start"]["dateTime"])*1000
+			end = tf_from_timestamp(event["end"]["dateTime"])*1000
+			toReturn.append({"summary":event["summary"],"start":start,"end":end})
 		request = service.events().list_next(request, response)
 	email = user_info_service.userinfo().get().execute()["email"]
-	toReturn.append(email)
-	return json.dumps(toReturn,sort_keys=True)
+	toReturn = json.dumps(toReturn,sort_keys=True)
+	email_hash = hashlib.sha224(email).hexdigest()
+	
+	conn = sqlite3.connect('example.db')
+	c = conn.cursor()
+	c.execute("insert or replace into events (email,data) values (?,?)",(email_hash,toReturn))
+	conn.commit()
+	conn.close()
+	return email_hash
+
+	
