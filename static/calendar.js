@@ -1,3 +1,5 @@
+var eventData = null; //only non-null upon POST request
+
 function convertHM(date)
 {
 	return Math.floor(date.getMinutes()/15)/4 + date.getHours();
@@ -28,11 +30,19 @@ function populateEvents()
 	$("#events").empty();
 	if($.cookie('blah') != null)
 	{
-		$.post("../all.py",{"blah":$.cookie('blah')})
-		.done(function(data) 
+		if(eventData == null)
 		{
-		   for(var i = 0; i < data.length; i++) {addEvent(data[i]);}
-		});
+			$.post("../all.py",{"blah":$.cookie('blah')})
+			.done(function(data) 
+			{
+				eventData = data;
+			   	for(var i = 0; i < data.length; i++) {addEvent(data[i]);}
+			});
+		}
+		else
+		{
+			for(var i = 0; i < eventData.length; i++) {addEvent(eventData[i]);}
+		}
 	}
 }
 
