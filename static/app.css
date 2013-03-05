@@ -25,7 +25,6 @@
 			width: 100%;			
 			background: black;
 			height: 10%;
-			margin:auto;
 			text-align: center;
 			line-height: 75px;
 			color:white;
@@ -34,11 +33,32 @@
 		{
 			position: relative;
 			width: 100%
-			background: green;
 			height: 90%;
 			overflow: hidden;
 			overflow-y:scroll;
 			-webkit-overflow-scrolling: touch;
+			background: url('preview.png');
+		}
+		#task_container
+		{
+			position: relative;
+			width: 100%;
+			height: 80%;
+			overflow: hidden;
+			overflow-y:scroll;
+			-webkit-overflow-scrolling: touch;
+			background: url('preview.png');
+		}
+		#task_footer
+		{
+			position: relative;
+			height: 20%;
+			width: 100%;
+			margin: auto;
+			bottom: 0px;
+			text-align: center;
+			background: black;
+			color:white;
 		}
 		#hours_container {
 			position: relative;
