@@ -13,7 +13,11 @@ def do_py_stuff(environ, start_response):
 	conn.row_factory = sqlite3.Row
 	c = conn.cursor()
 	c.execute("select data from events where email=?",(email,))
-	return c.fetchone()['data']
+	toReturn = c.fetchone()['data']
+	conn.commit()
+	conn.close()
+	return toReturn
+
 	
 def application(environ, start_response):
 	request = Request(environ)
@@ -31,7 +35,7 @@ def application(environ, start_response):
 			email = get_events.callback(request.args.get("code"))
 			response = Response()
 			response.status_code = 301
-			response.location = "/static/calendar.html"
+			response.location = "/static/app.html"
 			response.set_cookie("blah",email)
 			return response(environ, start_response)	
 		# if not, 404 this sucker

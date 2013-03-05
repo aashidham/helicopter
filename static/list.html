@@ -16,6 +16,11 @@
 
   <div data-role="page" id="list">
     <div data-role="header" data-theme="b" data-position="fixed" data-id="footer">
+                <div id="edit"><a data-role="button" data-inline="true" data-theme="b" class="ui-btn-left">
+                    Edit
+                </a></div>
+                <div id="new"><a href="#list_new" data-role="button" data-inline="true" data-theme="b" data-icon="plus" data-iconpos="notext" class="ui-btn-right"></a></div>
+
       <h1>List</h1>
     </div>
     <div data-role="content">
@@ -30,7 +35,16 @@
         </div>
     </div>
   </div>
-
+  
+  <div data-role="page" id="list_new">
+    <div data-role="header" data-theme="b" data-position="fixed" data-id="footer">
+      <h1>New Task</h1>
+      <div id="back"><a href="#list" data-role="button" data-inline="true" data-theme="b" data-icon="arrow-l" data-iconpos="left" class="ui-btn-left">Back</a></div>
+    </div>
+    <div data-role="content">
+      <p>This is a place to add tasks</p>
+    </div>
+  </div>
 
 </body>
 </html>

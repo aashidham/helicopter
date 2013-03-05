@@ -1,0 +1,125 @@
+
+		#container { 
+			position: absolute;
+			top: 40px;
+			bottom: 33px;
+			left: 0px;
+			right: 0px;
+			background: url('preview.png');
+		}
+		html, body {
+  			height: 100%;
+  			overflow: auto;
+		}
+
+
+		#arrows{
+			position: relative;
+			max-width:100%; 
+			max-height:100%;
+			float:left;
+		}
+		#day_header {
+			position: relative;
+			top: 0px;
+			width: 100%;			
+			background: black;
+			height: 10%;
+			margin:auto;
+			text-align: center;
+			line-height: 75px;
+			color:white;
+		}
+		#day_container
+		{
+			position: relative;
+			width: 100%
+			background: green;
+			height: 90%;
+			overflow: hidden;
+			overflow-y:scroll;
+			-webkit-overflow-scrolling: touch;
+		}
+		#hours_container {
+			position: relative;
+			width: 10%;
+			height: 1277px;
+			float: left;
+		}
+		#events_container {
+			position: relative;
+			width: 90%;
+			height: 1277px;
+			float: left;
+		}
+		#mid_day { 
+			position: relative;
+			height: 50px;
+			width: 100%;
+			background: #E8E8E8;
+			border-bottom: 1px dotted #505050;
+			margin:auto;
+		}
+		#events {
+			position: absolute;
+			top: 26px;
+			bottom: 28px;
+			left: 5%;
+			right: 5%;
+		}
+		#event {
+			position: absolute;
+			background: red;
+			padding-left:10px;
+			padding-top:10px;
+			top:51px;
+			height:40px;
+			left: 0px;
+			right: 0px;
+			color: white;
+			text-shadow: none;
+		}
+		#hour_label {
+			position: relative;
+			height: 50px;
+			width: 100%;
+			background: #E8E8E8;
+			border-bottom: 1px dashed #E8E8E8;
+			margin:auto;
+			text-align: right;
+		}
+		#hour_label span {
+			font-size: 10px;
+		}
+		
+		#task {
+			position: relative;
+			height: 100px;
+			background: #E8E8E8;
+			width: 100%;
+			border-bottom: 1px dashed #505050;
+		}
+		
+		#task_title_1 {
+			position: absolute;
+			top: 5px;
+			left: 10px;
+			height: 30px;
+			font-size: 30px;
+		}
+		#task_duration_2 {
+			color: #3E6790;
+			position: absolute;
+			left: 10px;
+			top: 40px;
+			height: 25px;
+			font-size: 25px;
+		}
+		#task_deadline_3 {
+			position: absolute;
+			left: 10px;
+			bottom: 5px;
+			height: 25px;
+			font-size: 25px;
+		}
+		}
