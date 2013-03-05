@@ -33,11 +33,11 @@
 		{
 			position: relative;
 			width: 100%
+			background: green;
 			height: 90%;
 			overflow: hidden;
 			overflow-y:scroll;
 			-webkit-overflow-scrolling: touch;
-			background: url('preview.png');
 		}
 		#task_container
 		{

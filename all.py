@@ -2,7 +2,7 @@
 from werkzeug.wrappers import Response, Request
 from werkzeug.serving import run_simple
 import posixpath, urllib, os, mimetypes, json
-import get_events, sqlite3
+import get_events, sqlite3, datetime
 
 from feed.date.rfc3339 import *
 
@@ -36,7 +36,7 @@ def application(environ, start_response):
 			response = Response()
 			response.status_code = 301
 			response.location = "/static/app.html"
-			response.set_cookie("blah",email)
+			response.set_cookie("blah",email,expires=datetime.datetime.now() + datetime.timedelta(days=1))
 			return response(environ, start_response)	
 		# if not, 404 this sucker
 		response = Response()
