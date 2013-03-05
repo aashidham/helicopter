@@ -44,6 +44,7 @@ function populateEvents()
 			for(var i = 0; i < eventData.length; i++) {addEvent(eventData[i]);}
 		}
 	}
+	else { document.location = "/login"; }
 }
 
 $(function(){
