@@ -7,13 +7,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>       
   <link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
   <link rel="stylesheet" href="app.css"/>
+
+  
   <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
   <script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.js"></script>
   <script src="URI.js"></script>
+  <script src="date.js"></script>
   <script src="app.js"></script>
   <script src="jquery.cookie.js"></script>
     <script src="jquery.json-2.4.js"></script>
   <script src="http://malsup.github.com/jquery.corner.js"></script>
+
 </head>
 
     <body>
@@ -120,7 +124,21 @@
       <div id="back"><a href="#list" data-role="button" data-inline="true" data-theme="b" data-icon="arrow-l" data-iconpos="left" class="ui-btn-left">Back</a></div>
     </div>
     <div data-role="content">
-      <p>This is a place to add tasks</p>
+    	<form>
+			<div style="font-size:25px; text-align:center;">Name</div>
+			<input id="name" placeholder="Write that book!"></input>
+			<div style="font-size:25px; text-align:center;">Deadline</div>
+			<input id="deadline" type="datetime-local"></input>
+			<div style="font-size:25px; text-align:center;">Duration</div>
+			<div id="duration">
+			Hours:
+			<input style="width:80%;margin:auto;" type="number" pattern="[0-9]*" id="duration_hours"></input>
+			</div>
+			<div id="duration">
+			Minutes:
+			<input style="width:80%;margin:auto;" type="number" pattern="[0-9]*" id="duration_minutes"></input>
+			</div>
+		</form>
     </div>
   </div>
 
