@@ -36,13 +36,43 @@ function populateEvents()
 			.done(function(data) 
 			{
 				eventData = data;
-			   	for(var i = 0; i < data.length; i++) {addEvent(data[i]);}
 			});
 		}
 		else
 		{
 			for(var i = 0; i < eventData.length; i++) {addEvent(eventData[i]);}
 		}
+	}
+	else { document.location = "/login"; }
+}
+
+function populateTasks()
+{
+	$("#task_container").empty();
+	if($.cookie('blah') != null)
+	{
+		$.post("loadtasks")
+		.done(function(data)
+		{
+			for(var i = 0; i < data.length; i++)
+			{
+				var editPane = $('<div id="edit_task"><a data-role="button" data-inline="true" data-theme="d" data-icon="delete" data-iconpos="notext" class="ui-btn-right"></a></div>')
+				var alertPane = $('<div id="alert_task"><a href="#list_new" data-role="button" data-inline="true" data-theme="d" data-icon="alert" data-iconpos="notext" class="ui-btn-right"></a></div>')
+				var outer = jQuery("<div/>",{id:"task"});
+				var content = jQuery("<div/>",{id:"task_content"});
+				var inner1 = jQuery("<div/>",{id:"task_title_1",text:data[i]["summary"]});
+				var inner2 = jQuery("<div/>",{id:"task_duration_2",text:data[i]["duration"]});
+				var inner3 = jQuery("<div/>",{id:"task_deadline_3",text:data[i]["deadline"]});
+				content.append(inner1);
+				content.append(inner2);
+				content.append(inner3);
+				outer.append(alertPane);
+				outer.append(editPane);
+				outer.append(content);
+				outer.appendTo("#task_container");
+			}
+			$("#task_container").trigger('create');
+		});
 	}
 	else { document.location = "/login"; }
 }
@@ -79,7 +109,18 @@ $(function(){
 			.done(function(data)
 			{
 				document.location = "#list";
+				populateTasks();
 			});
 		});
+		$("#edit").click(function()
+		{
+			$("div #edit_task").toggle();
+		});
+		$("div#edit_task").click(function()
+		{
+			console.log("ehY");
+			//.siblings("#task_content").children("#task_title_1").text());
+		});
 		populateEvents();
+		populateTasks();
 });

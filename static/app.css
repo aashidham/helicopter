@@ -120,6 +120,36 @@
 			border-bottom: 1px dashed #505050;
 		}
 		
+		#alert_task {
+			position: relative;
+			height:100%;
+			float: left;
+			padding-left: 10px;
+			display: none;
+		}
+		
+		#alert_task a {
+			top: 38px;
+		}
+		
+		#task_content {
+			position: relative;
+			height: 100%;
+			overflow: hidden;
+		}
+		
+		#edit_task {
+			position: relative;
+			height:100%;
+			float: left;
+			padding-left: 10px;
+			display: none;
+		}
+		
+		#edit_task a {
+			top: 38px;
+		}
+		
 		#task_title_1 {
 			position: absolute;
 			top: 5px;

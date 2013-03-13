@@ -61,6 +61,22 @@ def application(environ, start_response):
 				c.execute("insert or replace into events (tasks,email,data) values (:tasks,:email,(select data from events where email=:email))",{"email":email,"tasks":json.dumps(curr_tasks)})
 			response = Response()
 			return response(environ, start_response)
+		if "removetasks" in request.path:
+			summary = request.form["summary"]
+			email = request.cookies.get("blah")
+			for c in manage_db():
+				c.execute("select * from events where email=?",(email,))
+				result = c.fetchone()
+				if result['tasks'] is not None:
+					curr_tasks = json.loads(result['tasks'])
+					filter (lambda task: task != summary, curr_tasks)
+					c.execute("insert or replace into events (tasks,email,data) values (:tasks,:email,(select data from events where email=:email))",{"email":email,"tasks":json.dumps(curr_tasks)})
+					response = Response()
+					return response(environ, start_response)
+				else:
+					response = Response()
+					response.status_code = 404
+					return response(environ, start_response)
 		if "loadtasks" in request.path:
 			email = request.cookies.get("blah")
 			for c in manage_db():
