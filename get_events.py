@@ -45,7 +45,7 @@ def callback(code):
 	
 	conn = sqlite3.connect('example.db')
 	c = conn.cursor()
-	c.execute("insert or replace into events (email,data) values (?,?)",(email_hash,toReturn))
+	c.execute("insert or replace into events (tasks,email,data) values ((select tasks from events where email=:email),:email,:data)",{"email":email_hash,"data":toReturn})
 	conn.commit()
 	conn.close()
 	return email_hash

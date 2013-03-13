@@ -32,7 +32,7 @@ function populateEvents()
 	{
 		if(eventData == null)
 		{
-			$.post("../all.py",{"blah":$.cookie('blah')})
+			$.post("../all.py")
 			.done(function(data) 
 			{
 				eventData = data;
@@ -72,6 +72,14 @@ $(function(){
 			date2.setDate(date2.getDate() + 1);
 			$("#day_header span").html(date2.toDateString());
 			populateEvents();
+		});
+		$("#submit_newtask").click(function()
+		{
+			$.post("addtask",{"deadline":$("#deadline").val(),"hours":$("#duration_hours").val(),"minutes":$("#duration_minutes").val(),"name":$("#name").val()})
+			.done(function(data)
+			{
+				document.location = "#list";
+			});
 		});
 		populateEvents();
 });

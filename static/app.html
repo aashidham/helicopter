@@ -9,14 +9,14 @@
   <link rel="stylesheet" href="app.css"/>
 
   
-  <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
-  <script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.js"></script>
+  <script src="jquery-1.7.2.min.js"></script>
+  <script src="jquery.mobile-1.2.0.js"></script>
   <script src="URI.js"></script>
   <script src="date.js"></script>
   <script src="app.js"></script>
   <script src="jquery.cookie.js"></script>
     <script src="jquery.json-2.4.js"></script>
-  <script src="http://malsup.github.com/jquery.corner.js"></script>
+  <script src="jquery.corner.js"></script>
 
 </head>
 
@@ -122,13 +122,13 @@
     <div data-role="header" data-theme="b" data-position="fixed" data-id="footer">
       <h1>New Task</h1>
       <div id="back"><a href="#list" data-role="button" data-inline="true" data-theme="b" data-icon="arrow-l" data-iconpos="left" class="ui-btn-left">Back</a></div>
+      <div id="submit_newtask"><a data-role="button" data-inline="true" data-theme="b" class="ui-btn-right">Submit</a></div>
     </div>
     <div data-role="content">
-    	<form>
 			<div style="font-size:25px; text-align:center;">Name</div>
 			<input id="name" placeholder="Write that book!"></input>
 			<div style="font-size:25px; text-align:center;">Deadline</div>
-			<input id="deadline" type="datetime-local"></input>
+			<input id="deadline" type="datetime"></input>
 			<div style="font-size:25px; text-align:center;">Duration</div>
 			<div id="duration">
 			Hours:
@@ -138,7 +138,6 @@
 			Minutes:
 			<input style="width:80%;margin:auto;" type="number" pattern="[0-9]*" id="duration_minutes"></input>
 			</div>
-		</form>
     </div>
   </div>
 
