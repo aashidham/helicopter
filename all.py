@@ -13,16 +13,6 @@ def manage_db():
 	yield c
 	conn.commit()
 	conn.close()
-
-def do_py_stuff(environ, start_response):
-	request = Request(environ)
-	email = request.cookies.get("blah")
-	for c in manage_db():
-		c.execute("select data from events where email=?",(email,))
-		result = c.fetchone()
-		toReturn = result['data']
-	return toReturn
-
 	
 def application(environ, start_response):
 	request = Request(environ)
@@ -30,7 +20,6 @@ def application(environ, start_response):
 	try:
 		f = open(path,'rb')
 	except IOError:
-		# check if url is one of the accepted ones
 		if "login" in request.path: 
 			response = Response()
 			response.status_code = 301
@@ -82,13 +71,17 @@ def application(environ, start_response):
 				toReturn = c.fetchone()['tasks']
 			response = Response(toReturn, mimetype="application/json")
 			return response(environ, start_response)
+		if "loadall" in request.path:
+			email = request.cookies.get("blah")
+			for c in manage_db():
+				c.execute("select data from events where email=?",(email,))
+				result = c.fetchone()
+				toReturn = result['data']
+			response = Response(toReturn, mimetype="application/json")
+			return response(environ, start_response)
 		# if not, 404 this sucker
 		response = Response()
 		response.status_code = 404
-		return response(environ, start_response)
-	if posixpath.splitext(path)[1] == ".py":
-		json_output = do_py_stuff(environ, start_response)
-		response = Response(json_output, mimetype="application/json")
 		return response(environ, start_response)
 	response = Response(f.read(), mimetype=mimetypes.guess_type(request.path)[0])
 	return response(environ, start_response)

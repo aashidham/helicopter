@@ -32,7 +32,7 @@ function populateEvents()
 	{
 		if(eventData == null)
 		{
-			$.post("../all.py")
+			$.post("loadall")
 			.done(function(data) 
 			{
 				eventData = data;
