@@ -36,9 +36,10 @@ function populateEvents()
 			.done(function(data) 
 			{
 				eventData = data;
+				for(var i = 0; i < eventData.length; i++) {addEvent(eventData[i]);}
 			});
 		}
-		else
+		else 
 		{
 			for(var i = 0; i < eventData.length; i++) {addEvent(eventData[i]);}
 		}
@@ -124,14 +125,6 @@ $(function(){
 		{
 			$(".edit_task").toggle();
 		});
-		$(".edit_task").click(function()
-		{
-			alert("hey");
-			//$(this).siblings("#task_content").children("#task_title_1").text());
-		});
 		populateEvents();
 		populateTasks();
-		//alert("here");
-		console.log($(".edit_task").length);
-		//alert("here2");
 });
