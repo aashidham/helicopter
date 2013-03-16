@@ -56,20 +56,28 @@ function populateTasks()
 		{
 			for(var i = 0; i < data.length; i++)
 			{
-				var editPane = $('<div id="edit_task"><a data-role="button" data-inline="true" data-theme="d" data-icon="delete" data-iconpos="notext" class="ui-btn-right"></a></div>')
-				var alertPane = $('<div id="alert_task"><a href="#list_new" data-role="button" data-inline="true" data-theme="d" data-icon="alert" data-iconpos="notext" class="ui-btn-right"></a></div>')
+				var editPane = $('<div class="edit_task"><a data-role="button" data-inline="true" data-theme="d" data-icon="delete" data-iconpos="notext" class="ui-btn-right"></a></div>');
+				editPane.click(function(){
+					var summary = $(this).siblings("#task_content").children("#task_title_1").text();
+					$.post("removetasks",{"summary":summary})
+					.done(function(data)
+					{
+						populateTasks();
+					});
+				});
+				var alertPane = $('<div class="alert_task"><a href="#list_new" data-role="button" data-inline="true" data-theme="d" data-icon="alert" data-iconpos="notext" class="ui-btn-right"></a></div>');
 				var outer = jQuery("<div/>",{id:"task"});
 				var content = jQuery("<div/>",{id:"task_content"});
 				var inner1 = jQuery("<div/>",{id:"task_title_1",text:data[i]["summary"]});
 				var inner2 = jQuery("<div/>",{id:"task_duration_2",text:data[i]["duration"]});
 				var inner3 = jQuery("<div/>",{id:"task_deadline_3",text:data[i]["deadline"]});
+				outer.appendTo("#task_container");
 				content.append(inner1);
 				content.append(inner2);
 				content.append(inner3);
 				outer.append(alertPane);
 				outer.append(editPane);
 				outer.append(content);
-				outer.appendTo("#task_container");
 			}
 			$("#task_container").trigger('create');
 		});
@@ -114,13 +122,16 @@ $(function(){
 		});
 		$("#edit").click(function()
 		{
-			$("div #edit_task").toggle();
+			$(".edit_task").toggle();
 		});
-		$("div#edit_task").click(function()
+		$(".edit_task").click(function()
 		{
-			console.log("ehY");
-			//.siblings("#task_content").children("#task_title_1").text());
+			alert("hey");
+			//$(this).siblings("#task_content").children("#task_title_1").text());
 		});
 		populateEvents();
 		populateTasks();
+		//alert("here");
+		console.log($(".edit_task").length);
+		//alert("here2");
 });
