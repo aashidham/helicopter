@@ -25,6 +25,7 @@ function addEvent(data)
 	}
 }
 
+//refresh event list on day arrow click
 function populateEvents()
 {
 	$("#events").empty();
@@ -47,7 +48,23 @@ function populateEvents()
 	else { document.location = "/login"; }
 }
 
-function populateTasks()
+//contact the server to refresh eventData
+function populateEventsRefresh()
+{
+	if($.cookie('blah') != null)
+	{
+		$.post("loadall")
+		.done(function(data) 
+		{
+			eventData = data;
+			populateEvents();
+		});
+	}
+	else { document.location = "/login"; }
+}
+
+//contact the server to refresh tasks and events
+function populateAll()
 {
 	$("#task_container").empty();
 	if($.cookie('blah') != null)
@@ -63,7 +80,7 @@ function populateTasks()
 					$.post("removetasks",{"summary":summary})
 					.done(function(data)
 					{
-						populateTasks();
+						populateAll();
 					});
 				});
 				var alertPane = $('<div class="alert_task"><a href="#list_new" data-role="button" data-inline="true" data-theme="d" data-icon="alert" data-iconpos="notext" class="ui-btn-right"></a></div>');
@@ -81,6 +98,7 @@ function populateTasks()
 				outer.append(content);
 			}
 			$("#task_container").trigger('create');
+			populateEventsRefresh();
 		});
 	}
 	else { document.location = "/login"; }
@@ -118,13 +136,12 @@ $(function(){
 			.done(function(data)
 			{
 				document.location = "#list";
-				populateTasks();
+				populateAll();
 			});
 		});
 		$("#edit").click(function()
 		{
 			$(".edit_task").toggle();
 		});
-		populateEvents();
-		populateTasks();
+		populateAll();
 });
