@@ -3,6 +3,7 @@ from werkzeug.wrappers import Response, Request
 from werkzeug.serving import run_simple
 import posixpath, urllib, os, mimetypes, json, sqlite3
 import get_events, datetime
+import combine
 
 from feed.date.rfc3339 import *
 
@@ -33,7 +34,7 @@ def application(environ, start_response):
 			response.set_cookie("blah",email,expires=datetime.datetime.now() + datetime.timedelta(days=1))
 			return response(environ, start_response)
 		if "addtask" in request.path:
-			deadline = request.form["deadline"]
+			deadline = tf_from_timestamp(request.form["deadline"]) * 1000
 			name = request.form["name"]
 			hours = int(request.form["hours"])
 			minutes = int(request.form["minutes"])
@@ -74,10 +75,15 @@ def application(environ, start_response):
 		if "loadall" in request.path:
 			email = request.cookies.get("blah")
 			for c in manage_db():
-				c.execute("select data from events where email=?",(email,))
+				c.execute("select * from events where email=?",(email,))
 				result = c.fetchone()
-				toReturn = result['data']
-			response = Response(toReturn, mimetype="application/json")
+				events = json.loads(result['data'])
+				tasks = json.loads(result['tasks'])
+			events = [combine.Thing(x) for x in events]
+			tasks = [combine.Thing(x) for x in tasks]
+			toReturn = combine.combine(events,tasks)
+			toReturn = [x.__dict__ for x in toReturn]
+			response = Response(json.dumps(toReturn), mimetype="application/json")
 			return response(environ, start_response)
 		# if not, 404 this sucker
 		response = Response()

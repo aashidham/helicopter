@@ -2,7 +2,7 @@ var eventData = null; //only non-null upon POST request
 
 function convertHM(date)
 {
-	return Math.floor(date.getMinutes()/15)/4 + date.getHours();
+	return Math.round(date.getMinutes()/15)/4 + date.getHours();
 }
 
 function addEvent(data)
@@ -19,7 +19,7 @@ function addEvent(data)
 		var top = ($("#hour_label").height() + 1)*eventStart;
 		jQuery("<div/>",
 		{id:"event",
-		text:data["summary"],
+		text:data["name"],
 		}).css({"top":top+"px","height":height+"px",opacity:0.7}).corner("5px")
 		.appendTo("#events");
 	}
@@ -63,6 +63,12 @@ function populateEventsRefresh()
 	else { document.location = "/login"; }
 }
 
+function durationToStr(duration)
+{
+	duration = parseInt(duration);
+	return Math.floor(duration/3600) + " hours, " + Math.floor((duration/60) % 60) + " minutes, " + duration % 60 + " seconds left";
+}
+
 //contact the server to refresh tasks and events
 function populateAll()
 {
@@ -87,8 +93,10 @@ function populateAll()
 				var outer = jQuery("<div/>",{id:"task"});
 				var content = jQuery("<div/>",{id:"task_content"});
 				var inner1 = jQuery("<div/>",{id:"task_title_1",text:data[i]["summary"]});
-				var inner2 = jQuery("<div/>",{id:"task_duration_2",text:data[i]["duration"]});
-				var inner3 = jQuery("<div/>",{id:"task_deadline_3",text:data[i]["deadline"]});
+				var inner2 = jQuery("<div/>",{id:"task_duration_2",text:durationToStr(data[i]["duration"])});
+				var deadline = data[i]["deadline"];
+				deadline = new Date(parseInt(deadline));
+				var inner3 = jQuery("<div/>",{id:"task_deadline_3",text: "Due date: "+ deadline.toString()});
 				outer.appendTo("#task_container");
 				content.append(inner1);
 				content.append(inner2);
@@ -96,6 +104,11 @@ function populateAll()
 				outer.append(alertPane);
 				outer.append(editPane);
 				outer.append(content);
+				outer.click(function(){
+					$(this).animate({opacity: 0.4});
+					alert($(this).children("#task_content").children("#task_duration_2").text());
+					$(this).animate({opacity: 1.0});
+				});
 			}
 			$("#task_container").trigger('create');
 			populateEventsRefresh();
