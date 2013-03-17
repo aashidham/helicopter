@@ -1,4 +1,5 @@
 var eventData = null; //only non-null upon POST request
+var editing = false;
 
 function convertHM(date)
 {
@@ -82,8 +83,8 @@ function populateAll()
 			{
 				var editPane = $('<div class="edit_task"><a data-role="button" data-inline="true" data-theme="d" data-icon="delete" data-iconpos="notext" class="ui-btn-right"></a></div>');
 				editPane.click(function(){
-					var summary = $(this).siblings("#task_content").children("#task_title_1").text();
-					$.post("removetasks",{"summary":summary})
+					var position = $(this).parent().index();
+					$.post("removetasks",{"position":position})
 					.done(function(data)
 					{
 						populateAll();
@@ -96,7 +97,7 @@ function populateAll()
 				var inner2 = jQuery("<div/>",{id:"task_duration_2",text:durationToStr(data[i]["duration"])});
 				var deadline = data[i]["deadline"];
 				deadline = new Date(parseInt(deadline));
-				var inner3 = jQuery("<div/>",{id:"task_deadline_3",text: "Due date: "+ deadline.toString()});
+				var inner3 = jQuery("<div/>",{id:"task_deadline_3",text:deadline.toString()});
 				outer.appendTo("#task_container");
 				content.append(inner1);
 				content.append(inner2);
@@ -104,10 +105,24 @@ function populateAll()
 				outer.append(alertPane);
 				outer.append(editPane);
 				outer.append(content);
-				outer.click(function(){
+				content.click(function(){
 					$(this).animate({opacity: 0.4});
-					alert($(this).children("#task_content").children("#task_duration_2").text());
 					$(this).animate({opacity: 1.0});
+					if(editing)
+					{
+						var position = $(this).parent().index();
+						$.post("gettaskbypos",{"position":position})
+						.done(function(data)
+						{
+							$("#name").val(data["summary"]);
+							var deadline = new Date(parseInt(data["deadline"]));
+							$("#deadline").val(deadline.toISOString());
+							var duration = parseInt(data["duration"]);
+							$("#duration_hours").val(Math.floor(duration/3600));
+							$("#duration_minutes").val(Math.floor((duration/60) % 60));
+							document.location = "#list_new";
+						});
+					}
 				});
 			}
 			$("#task_container").trigger('create');
@@ -155,6 +170,7 @@ $(function(){
 		$("#edit").click(function()
 		{
 			$(".edit_task").toggle();
+			editing = !editing;
 		});
 		populateAll();
 });

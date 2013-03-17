@@ -2,6 +2,7 @@
 from werkzeug.wrappers import Response, Request
 from werkzeug.serving import run_simple
 import posixpath, urllib, os, mimetypes, json, sqlite3
+from operator import attrgetter
 import get_events, datetime
 import combine
 
@@ -48,11 +49,13 @@ def application(environ, start_response):
 				if result['tasks'] is not None:
 					curr_tasks = json.loads(result['tasks'])
 				curr_tasks.append(new_task)
+				curr_tasks.sort(key=lambda x: x["duration"], reverse=True)
+				curr_tasks.sort(key=lambda x: x["deadline"])
 				c.execute("insert or replace into events (tasks,email,data) values (:tasks,:email,(select data from events where email=:email))",{"email":email,"tasks":json.dumps(curr_tasks)})
 			response = Response()
 			return response(environ, start_response)
 		if "removetasks" in request.path:
-			summary = request.form["summary"]
+			position = int(request.form["position"])
 			email = request.cookies.get("blah")
 			response = Response()
 			for c in manage_db():
@@ -60,10 +63,19 @@ def application(environ, start_response):
 				result = c.fetchone()
 				if result['tasks'] is not None:
 					curr_tasks = json.loads(result['tasks'])
-					curr_tasks = [x for x in curr_tasks if x["summary"] != summary]
+					del curr_tasks[position]
 					c.execute("insert or replace into events (tasks,email,data) values (:tasks,:email,(select data from events where email=:email))",{"email":email,"tasks":json.dumps(curr_tasks)})
 				else:
 					response.status_code = 404
+			return response(environ, start_response)
+		if "gettaskbypos" in request.path:
+			position = int(request.form["position"])
+			email = request.cookies.get("blah")
+			for c in manage_db():
+				c.execute("select * from events where email=?",(email,))
+				result = c.fetchone()
+				curr_tasks = json.loads(result['tasks'])
+			response = Response(json.dumps(curr_tasks[position]), mimetype="application/json")
 			return response(environ, start_response)
 		if "loadtasks" in request.path:
 			email = request.cookies.get("blah")
