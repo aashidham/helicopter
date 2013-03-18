@@ -95,6 +95,18 @@ def application(environ, start_response):
 			tasks = [combine.Thing(x) for x in tasks]
 			toReturn = combine.combine(events,tasks)
 			toReturn = [x.__dict__ for x in toReturn]
+			#naive first block implementation
+			if len(toReturn) > 0:
+				toReturn[0]["firstBlock"] = True
+				endTime = toReturn[0]["end"]
+				while endTime:
+					newEndTime = None
+					for elem in toReturn:
+						if elem["start"] == endTime:
+							elem["firstBlock"] = True
+							newEndTime = elem["end"]
+							break
+					endTime = newEndTime
 			response = Response(json.dumps(toReturn), mimetype="application/json")
 			return response(environ, start_response)
 		# if not, 404 this sucker

@@ -12,7 +12,7 @@ function addEvent(data)
 	var end = new Date(data["end"]);
 	var curr = new Date($("#day_header span").html());
 	var paddingTop = 10; //this is unfortunately hard-coded at the moment
-	if(curr.getDate() == start.getDate() && curr.getDate() == end.getDate())
+	if(curr.toDateString() == start.toDateString() && curr.toDateString() == end.toDateString())
 	{
 		var eventStart = convertHM(start);
 		var eventLength = Math.floor((end - start)/900000) * .25;
@@ -67,7 +67,7 @@ function populateEventsRefresh()
 function durationToStr(duration)
 {
 	duration = parseInt(duration);
-	return Math.floor(duration/3600) + " hours, " + Math.floor((duration/60) % 60) + " minutes, " + duration % 60 + " seconds left";
+	return Math.floor(duration/3600) + "h:" + Math.floor((duration/60) % 60) + "m:" + duration % 60 + "s";
 }
 
 //contact the server to refresh tasks and events
@@ -97,7 +97,7 @@ function populateAll()
 				var inner2 = jQuery("<div/>",{id:"task_duration_2",text:durationToStr(data[i]["duration"])});
 				var deadline = data[i]["deadline"];
 				deadline = new Date(parseInt(deadline));
-				var inner3 = jQuery("<div/>",{id:"task_deadline_3",text:deadline.toString()});
+				var inner3 = jQuery("<div/>",{id:"task_deadline_3",text:deadline.format("m/d/Y h:i A")});
 				outer.appendTo("#task_container");
 				content.append(inner1);
 				content.append(inner2);
@@ -135,6 +135,7 @@ function populateAll()
 $(function(){
 		var height = $("#day_header").height();
 		$("#day_header").css("line-height",height+"px");
+		alert(height);
 		height = $("#hour_label").height();
 		$("#hour_label span").css("line-height",height+"px");
 		
@@ -173,4 +174,5 @@ $(function(){
 			editing = !editing;
 		});
 		populateAll();
+		$(".alert_task").show()
 });

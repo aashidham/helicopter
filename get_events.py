@@ -35,9 +35,10 @@ def callback(code):
 	while request != None:
 		response = request.execute()
 		for event in response.get('items', []):
-			start = tf_from_timestamp(event["start"]["dateTime"])*1000
-			end = tf_from_timestamp(event["end"]["dateTime"])*1000
-			toReturn.append({"summary":event["summary"],"start":start,"end":end})
+			if "dateTime" in event["start"]:
+				start = tf_from_timestamp(event["start"]["dateTime"])*1000
+				end = tf_from_timestamp(event["end"]["dateTime"])*1000
+				toReturn.append({"summary":event["summary"],"start":start,"end":end})
 		request = service.events().list_next(request, response)
 	email = user_info_service.userinfo().get().execute()["email"]
 	toReturn = json.dumps(toReturn,sort_keys=True)

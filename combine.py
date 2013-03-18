@@ -36,7 +36,7 @@ class Thing(object):
 	def isTask(self):
 		return self.type == TASK
 			
-	def __str__(self):
+	def __repr__(self):
 		return self.name + " | start:" + str(self.start) + " | end:" + str(self.end) + " | type:" +str(self.type)
 
 def combine(events,tasks):
@@ -95,5 +95,5 @@ def combine(events,tasks):
 			else:
 				prevCounter = prevCounter-1
 		currCounter = currCounter-1				
-
+		
 	return eventsAndTasks
