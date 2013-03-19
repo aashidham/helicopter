@@ -5,6 +5,7 @@ import posixpath, urllib, os, mimetypes, json, sqlite3
 from operator import attrgetter
 import get_events, datetime
 import combine
+import time
 
 from feed.date.rfc3339 import *
 
@@ -96,6 +97,25 @@ def application(environ, start_response):
 			toReturn = combine.combine(events,tasks)
 			toReturn = [x.__dict__ for x in toReturn]
 			response = Response(json.dumps(toReturn), mimetype="application/json")
+			return response(environ, start_response)
+		if "startstop" in request.path:
+			email = request.cookies.get("blah")
+			position = int(request.form["position"])
+			taskInProgress = False
+			for c in manage_db():
+				c.execute("select tasks from events where email=?",(email,))
+				tasks = json.loads(c.fetchone()['tasks'])
+				for task in tasks:
+					if "startedTime" in task:
+						taskInProgress = True
+						task["duration"] = task["duration"] - (time.time() - task["startedTime"])
+						del task["startedTime"]
+						c.execute("insert or replace into events (tasks,email,data) values (:tasks,:email,(select data from events where email=:email))",{"email":email,"tasks":json.dumps(tasks)})
+						break
+				if not taskInProgress:
+					tasks[position]["startedTime"] = time.time()
+					c.execute("insert or replace into events (tasks,email,data) values (:tasks,:email,(select data from events where email=:email))",{"email":email,"tasks":json.dumps(tasks)})
+			response = Response()
 			return response(environ, start_response)
 		# if not, 404 this sucker
 		response = Response()

@@ -1,5 +1,7 @@
 var eventData = null; //only non-null upon POST request
+var taskData = null;
 var editing = false;
+var tid = null;
 
 function convertHM(date)
 {
@@ -70,6 +72,13 @@ function durationToStr(duration)
 	return Math.floor(duration/3600) + "h:" + Math.floor((duration/60) % 60) + "m:" + duration % 60 + "s";
 }
 
+function countdownDecrement(div,pos)
+{
+	console.log("in timer " + div.val());
+	taskData[pos]["duration"] = taskData[pos]["duration"] - 1;
+	div.text(durationToStr(taskData[pos]["duration"]));
+}
+
 //contact the server to refresh tasks and events
 function populateAll()
 {
@@ -79,8 +88,10 @@ function populateAll()
 		$.post("loadtasks")
 		.done(function(data)
 		{
+			taskData = data;
 			for(var i = 0; i < data.length; i++)
 			{
+				console.log("header files" + i);
 				var editPane = $('<div class="edit_task"><a data-role="button" data-inline="true" data-theme="d" data-icon="delete" data-iconpos="notext" class="ui-btn-right"></a></div>');
 				editPane.click(function(){
 					var position = $(this).parent().index();
@@ -91,10 +102,10 @@ function populateAll()
 					});
 				});
 				var alertPane = $('<div class="alert_task"><a href="#list_new" data-role="button" data-inline="true" data-theme="d" data-icon="alert" data-iconpos="notext" class="ui-btn-right"></a></div>');
-				var outer = jQuery("<div/>",{id:"task"});
+				var outer = jQuery("<div/>",{class:"task",id:"task"});
 				var content = jQuery("<div/>",{id:"task_content"});
 				var inner1 = jQuery("<div/>",{id:"task_title_1",text:data[i]["summary"]});
-				var inner2 = jQuery("<div/>",{id:"task_duration_2",text:durationToStr(data[i]["duration"])});
+				var inner2 = jQuery("<div/>",{id:"task_duration_2",class:"task_duration_2",text:durationToStr(data[i]["duration"])});
 				var deadline = data[i]["deadline"];
 				deadline = new Date(parseInt(deadline));
 				var inner3 = jQuery("<div/>",{id:"task_deadline_3",text:deadline.format("m/d/Y h:i A")});
@@ -106,11 +117,9 @@ function populateAll()
 				outer.append(editPane);
 				outer.append(content);
 				content.click(function(){
-					$(this).animate({opacity: 0.4});
-					$(this).animate({opacity: 1.0});
+					var position = $(this).parent().index();
 					if(editing)
 					{
-						var position = $(this).parent().index();
 						$.post("gettaskbypos",{"position":position})
 						.done(function(data)
 						{
@@ -123,7 +132,28 @@ function populateAll()
 							document.location = "#list_new";
 						});
 					}
+					else
+					{
+						$(this).animate({opacity: 0.4});
+						$(this).animate({opacity: 1.0});
+						$.post("startstop",{"position":position})
+						.done(function(data)
+						{
+							if(tid != null)
+							{
+								clearInterval(tid);
+								tid = null;
+							}
+							populateAll();
+						});
+					}
 				});
+				if('startedTime' in data[i])
+				{
+					pos = i;
+					tid = setInterval(function(){countdownDecrement(inner2,pos);},1000);
+				}
+
 			}
 			$("#task_container").trigger('create');
 			populateEventsRefresh();
@@ -135,7 +165,6 @@ function populateAll()
 $(function(){
 		var height = $("#day_header").height();
 		$("#day_header").css("line-height",height+"px");
-		alert(height);
 		height = $("#hour_label").height();
 		$("#hour_label span").css("line-height",height+"px");
 		
@@ -174,5 +203,4 @@ $(function(){
 			editing = !editing;
 		});
 		populateAll();
-		$(".alert_task").show()
 });
