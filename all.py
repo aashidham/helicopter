@@ -53,7 +53,7 @@ def application(environ, start_response):
 				curr_tasks.sort(key=lambda x: x["duration"], reverse=True)
 				curr_tasks.sort(key=lambda x: x["deadline"])
 				c.execute("insert or replace into events (tasks,email,data) values (:tasks,:email,(select data from events where email=:email))",{"email":email,"tasks":json.dumps(curr_tasks)})
-			response = Response()
+			response = Response("a")
 			return response(environ, start_response)
 		if "removetasks" in request.path:
 			position = int(request.form["position"])
@@ -69,14 +69,23 @@ def application(environ, start_response):
 				else:
 					response.status_code = 404
 			return response(environ, start_response)
-		if "gettaskbypos" in request.path:
+		if "edittask" in request.path:
+			deadline = tf_from_timestamp(request.form["deadline"]) * 1000
+			name = request.form["name"]
+			hours = int(request.form["hours"])
+			minutes = int(request.form["minutes"])
+			duration = 3600*hours + 60*minutes
 			position = int(request.form["position"])
 			email = request.cookies.get("blah")
+			response = Response()
 			for c in manage_db():
 				c.execute("select * from events where email=?",(email,))
 				result = c.fetchone()
 				curr_tasks = json.loads(result['tasks'])
-			response = Response(json.dumps(curr_tasks[position]), mimetype="application/json")
+				curr_tasks[position] = {"summary":name,"deadline":deadline,"duration":duration}
+				c.execute("insert or replace into events (tasks,email,data) values (:tasks,:email,(select data from events where email=:email))",{"email":email,"tasks":json.dumps(curr_tasks)})
+			response.status_code = 301
+			response.location = "/static/app.html#list"
 			return response(environ, start_response)
 		if "loadtasks" in request.path:
 			email = request.cookies.get("blah")

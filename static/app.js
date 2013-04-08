@@ -91,7 +91,6 @@ function populateAll()
 			taskData = data;
 			for(var i = 0; i < data.length; i++)
 			{
-				console.log("header files" + i);
 				var editPane = $('<div class="edit_task"><a data-role="button" data-inline="true" data-theme="d" data-icon="delete" data-iconpos="notext" class="ui-btn-right"></a></div>');
 				editPane.click(function(){
 					var position = $(this).parent().index();
@@ -117,20 +116,25 @@ function populateAll()
 				outer.append(editPane);
 				outer.append(content);
 				content.click(function(){
-					var position = $(this).parent().index();
+					var pos = $(this).parent().index();
 					if(editing)
 					{
-						$.post("gettaskbypos",{"position":position})
-						.done(function(data)
+						$("#list_edit #name").val(taskData[pos]["summary"]);
+						var deadline = new Date(parseInt(taskData[pos]["deadline"]));
+						$("#list_edit #deadline").val(deadline.toISOString());
+						var duration = parseInt(taskData[pos]["duration"]);
+						$("#list_edit #duration_hours").val(Math.floor(duration/3600));
+						$("#list_edit #duration_minutes").val(Math.floor((duration/60) % 60));
+						$("#submit_edittask").click(function()
 						{
-							$("#name").val(data["summary"]);
-							var deadline = new Date(parseInt(data["deadline"]));
-							$("#deadline").val(deadline.toISOString());
-							var duration = parseInt(data["duration"]);
-							$("#duration_hours").val(Math.floor(duration/3600));
-							$("#duration_minutes").val(Math.floor((duration/60) % 60));
-							document.location = "#list_new";
+							$.post("edittask",{"position":pos,"deadline":$("#list_edit #deadline").val(),"hours":$("#list_edit #duration_hours").val(),"minutes":$("#list_edit #duration_minutes").val(),"name":$("#list_edit #name").val()})
+							.done(function(data)
+							{
+								history.back();
+								populateAll();
+							});
 						});
+						document.location = "#list_edit";
 					}
 					else
 					{
@@ -151,6 +155,7 @@ function populateAll()
 				if('startedTime' in data[i])
 				{
 					pos = i;
+					taskData[pos]["duration"] = taskData[pos]["duration"] - (new Date().getTime() / 1000 - taskData[pos]["startedTime"])
 					tid = setInterval(function(){countdownDecrement(inner2,pos);},1000);
 				}
 
@@ -190,10 +195,10 @@ $(function(){
 		});
 		$("#submit_newtask").click(function()
 		{
-			$.post("addtask",{"deadline":$("#deadline").val(),"hours":$("#duration_hours").val(),"minutes":$("#duration_minutes").val(),"name":$("#name").val()})
+			$.post("addtask",{"deadline":$("#list_new #deadline").val(),"hours":$("#list_new #duration_hours").val(),"minutes":$("#list_new #duration_minutes").val(),"name":$("#list_new #name").val()})
 			.done(function(data)
 			{
-				document.location = "#list";
+				history.back();
 				populateAll();
 			});
 		});

@@ -143,6 +143,28 @@
 			</div>
     </div>
   </div>
+  <div data-role="page" id="list_edit">
+    <div data-role="header" data-theme="b" data-position="fixed" data-id="footer">
+      <h1>Edit Task</h1>
+      <div id="back"><a href="#list" data-role="button" data-inline="true" data-theme="b" data-icon="arrow-l" data-iconpos="left" class="ui-btn-left">Back</a></div>
+      <div id="submit_edittask"><a data-role="button" data-inline="true" data-theme="b" class="ui-btn-right">Submit</a></div>
+    </div>
+    <div data-role="content">
+			<div style="font-size:25px; text-align:center;">Name</div>
+			<input id="name" placeholder="Write that book!"></input>
+			<div style="font-size:25px; text-align:center;">Deadline</div>
+			<input id="deadline" type="datetime"></input>
+			<div style="font-size:25px; text-align:center;">Duration</div>
+			<div id="duration">
+			Hours:
+			<input style="width:80%;margin:auto;" type="number" pattern="[0-9]*" id="duration_hours"></input>
+			</div>
+			<div id="duration">
+			Minutes:
+			<input style="width:80%;margin:auto;" type="number" pattern="[0-9]*" id="duration_minutes"></input>
+			</div>
+    </div>
+  </div>
 
 
     </body>

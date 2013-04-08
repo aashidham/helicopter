@@ -95,5 +95,4 @@ def combine(events,tasks):
 			else:
 				prevCounter = prevCounter-1
 		currCounter = currCounter-1				
-		
 	return eventsAndTasks
