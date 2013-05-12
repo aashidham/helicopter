@@ -6,6 +6,7 @@ from operator import attrgetter
 import get_events, datetime
 import combine
 import time
+import pdb
 
 from feed.date.rfc3339 import *
 
@@ -103,6 +104,8 @@ def application(environ, start_response):
 				tasks = json.loads(result['tasks'])
 			events = [combine.Thing(x) for x in events]
 			tasks = [combine.Thing(x) for x in tasks]
+			events = sorted(events,key=lambda k:k.start)
+			tasks = sorted(tasks,key=lambda k:k.start)
 			toReturn = combine.combine(events,tasks)
 			toReturn = [x.__dict__ for x in toReturn]
 			response = Response(json.dumps(toReturn), mimetype="application/json")

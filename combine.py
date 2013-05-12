@@ -2,18 +2,19 @@ TASK = 1
 SPLIT_TASK = 2
 EVENT = 3
 
+from feed.date.rfc3339 import *
 
 def startDate(thing):
 	return thing.start
 
 class Thing(object):	
-	def __init__(self, taskOrEvent, isTask=None):
+	def __init__(self, taskOrEvent, isSplitTask=None):
 		self.name = taskOrEvent["summary"]
 		if "end" in taskOrEvent:
 			self.end = taskOrEvent["end"]
 			self.start = taskOrEvent["start"]
-			if isTask:
-				self.type = TASK
+			if isSplitTask:
+				self.type = SPLIT_TASK
 			else:
 				self.type = EVENT
 		else:
@@ -37,7 +38,7 @@ class Thing(object):
 		return self.type == TASK
 			
 	def __repr__(self):
-		return self.name + " | start:" + str(self.start) + " | end:" + str(self.end) + " | type:" +str(self.type)
+		return self.name + " | start:" + timestamp_from_tf(self.start/1000) + " | end:" + timestamp_from_tf(self.end/1000) + " | type:" +str(self.type)
 
 def combine(events,tasks):
 	eventsAndTasks = []
@@ -61,6 +62,8 @@ def combine(events,tasks):
 		currEvent = events[eventCounter]
 		eventsAndTasks.append(currEvent)
 		eventCounter = eventCounter+1
+	for elem in eventsAndTasks:
+		print elem
 	#adjust tasks
 	currCounter = len(eventsAndTasks)-1
 	while(currCounter > 0):
@@ -77,6 +80,7 @@ def combine(events,tasks):
 						curr.start = prev.end
 						curr.type = 2
 						split = Thing({"summary":curr.name,"start":prev.start-firstBlockDuration,"end":prev.start},True)
+						print "created split task"
 						eventsAndTasks.append(split)
 					else:
 						currDuration = curr.end - curr.start
@@ -86,7 +90,14 @@ def combine(events,tasks):
 					currDuration = curr.end - curr.start
 					curr.end = prev.start
 					curr.start = curr.end - currDuration
-				#elif prev.isTask() and curr.isEvent() and prev.end > curr.end:				
+				#elif prev.isTask() and curr.isEvent() and prev.end > curr.end:
+				elif prev.isTask() and prev.end > curr.end:
+					secondBlockDuration = prev.end - curr.start
+					prev.end = curr.start
+					prev.type = 2
+					split = Thing({"summary":prev.name,"start":curr.end,"end":curr.end + secondBlockDuration},True)
+					print "created split task (in second case)"
+					eventsAndTasks.append(split)
 				else:
 					prevDuration = prev.end - prev.start
 					prev.end = curr.start

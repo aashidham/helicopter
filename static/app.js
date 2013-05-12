@@ -140,7 +140,7 @@ function populateAll()
 					{
 						$(this).animate({opacity: 0.4});
 						$(this).animate({opacity: 1.0});
-						$.post("startstop",{"position":position})
+						$.post("startstop",{"position":pos})
 						.done(function(data)
 						{
 							if(tid != null)
