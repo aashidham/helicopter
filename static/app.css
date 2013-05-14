@@ -59,6 +59,7 @@
 			text-align: center;
 			background: black;
 			color:white;
+			text-shadow: none;
 		}
 		#hours_container {
 			position: relative;

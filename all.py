@@ -6,7 +6,6 @@ from operator import attrgetter
 import get_events, datetime
 import combine
 import time
-import pdb
 
 from feed.date.rfc3339 import *
 
@@ -92,8 +91,13 @@ def application(environ, start_response):
 			email = request.cookies.get("blah")
 			for c in manage_db():
 				c.execute("select tasks from events where email=?",(email,))
-				toReturn = c.fetchone()['tasks']
-			response = Response(toReturn, mimetype="application/json")
+				result = c.fetchone()
+			tasks = json.loads(result['tasks'])
+			currtime = time.time() * 1000
+			for task in tasks:
+				if task['deadline'] < currtime or task['duration'] == 0:
+					task['showAlertPane'] = True
+			response = Response(json.dumps(tasks), mimetype="application/json")
 			return response(environ, start_response)
 		if "loadall" in request.path:
 			email = request.cookies.get("blah")

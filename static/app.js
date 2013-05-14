@@ -3,6 +3,13 @@ var taskData = null;
 var editing = false;
 var tid = null;
 
+function addGlobalAlert()
+{
+	var toAdd = $('<div id="task_footer">You dont have enough free time to complete the tasks listed. Reduce the duration of your tasks to make your task list feasible again.</div>');
+	toAdd.insertAfter($("#task_container"));
+	$("#task_container").css("height","80%");
+}
+
 function convertHM(date)
 {
 	return Math.round(date.getMinutes()/15)/4 + date.getHours();
@@ -100,7 +107,14 @@ function populateAll()
 						populateAll();
 					});
 				});
-				var alertPane = $('<div class="alert_task"><a href="#list_new" data-role="button" data-inline="true" data-theme="d" data-icon="alert" data-iconpos="notext" class="ui-btn-right"></a></div>');
+				var alertPane = $('<div class="alert_task"><a data-role="button" data-inline="true" data-theme="d" data-icon="alert" data-iconpos="notext" class="ui-btn-right"></a></div>');
+				alertPane.click(function(){
+					alert("This task has a passed deadline and/or zero duration. Please fix this by editing the task.");
+				});
+				if ('showAlertPane' in data[i])
+				{
+					alertPane.show();
+				}
 				var outer = jQuery("<div/>",{class:"task",id:"task"});
 				var content = jQuery("<div/>",{id:"task_content"});
 				var inner1 = jQuery("<div/>",{id:"task_title_1",text:data[i]["summary"]});
