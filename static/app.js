@@ -131,7 +131,7 @@ function populateAll()
 				outer.append(content);
 				content.click(function(){
 					var pos = $(this).parent().index();
-					if(editing)
+					if(editing || 'showAlertPane' in taskData[pos])
 					{
 						$("#list_edit #name").val(taskData[pos]["summary"]);
 						var deadline = new Date(parseInt(taskData[pos]["deadline"]));

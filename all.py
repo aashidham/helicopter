@@ -106,6 +106,8 @@ def application(environ, start_response):
 				result = c.fetchone()
 				events = json.loads(result['data'])
 				tasks = json.loads(result['tasks'])
+			currtime = time.time() * 1000
+			tasks = [task for task in tasks if not (task['deadline'] < currtime or task['duration'] == 0)]
 			events = [combine.Thing(x) for x in events]
 			tasks = [combine.Thing(x) for x in tasks]
 			events = sorted(events,key=lambda k:k.start)
