@@ -82,7 +82,7 @@ function durationToStr(duration)
 function countdownDecrement(div,pos)
 {
 	console.log("in timer " + div.val());
-	taskData[pos]["duration"] = taskData[pos]["duration"] - 1;
+	taskData[pos]["duration"] = Math.max(taskData[pos]["duration"] - 1,0);
 	div.text(durationToStr(taskData[pos]["duration"]));
 }
 

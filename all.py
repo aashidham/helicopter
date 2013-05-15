@@ -126,7 +126,7 @@ def application(environ, start_response):
 				for task in tasks:
 					if "startedTime" in task:
 						taskInProgress = True
-						task["duration"] = task["duration"] - (time.time() - task["startedTime"])
+						task["duration"] = max(task["duration"] - (time.time() - task["startedTime"]),0)
 						del task["startedTime"]
 						c.execute("insert or replace into events (tasks,email,data) values (:tasks,:email,(select data from events where email=:email))",{"email":email,"tasks":json.dumps(tasks)})
 						break
