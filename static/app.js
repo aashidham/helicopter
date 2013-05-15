@@ -1,13 +1,31 @@
 var eventData = null; //only non-null upon POST request
 var taskData = null;
 var editing = false;
+var globalAlert = false;
 var tid = null;
+
+function removeGlobalAlert()
+{
+	if(globalAlert)
+	{
+		console.log("in removeGlobalAlert");
+		globalAlert = false;
+		$("#global_alert").remove();
+		$("#task_container").css("height","100%");
+	}
+}
 
 function addGlobalAlert()
 {
-	var toAdd = $('<div id="task_footer">You dont have enough free time to complete the tasks listed. Reduce the duration of your tasks to make your task list feasible again.</div>');
-	toAdd.insertAfter($("#task_container"));
-	$("#task_container").css("height","80%");
+	if(!globalAlert) //only should be called once in a session
+	{
+		var toAdd = $('<div id="global_alert">You dont have enough free time to complete the tasks listed. Reduce the duration of your tasks to make your task list feasible again.</div>');
+		toAdd.insertAfter($("#task_container"));
+		$("#task_container").css("height","80%");
+		globalAlert = true;
+		$("#events").empty();
+	}
+	else console.log("ASSERT");
 }
 
 function convertHM(date)
@@ -41,16 +59,21 @@ function populateEvents()
 	$("#events").empty();
 	if($.cookie('blah') != null)
 	{
-		if(eventData == null)
+		if(eventData == null && !globalAlert)
 		{
 			$.post("loadall")
 			.done(function(data) 
 			{
-				eventData = data;
-				for(var i = 0; i < eventData.length; i++) {addEvent(eventData[i]);}
+				if(!data["error"])
+				{
+					eventData = data["data"];
+					for(var i = 0; i < eventData.length; i++) {addEvent(eventData[i]);}
+					removeGlobalAlert();
+				}
+				else addGlobalAlert();
 			});
 		}
-		else 
+		else if(eventData != null)
 		{
 			for(var i = 0; i < eventData.length; i++) {addEvent(eventData[i]);}
 		}
@@ -63,12 +86,17 @@ function populateEventsRefresh()
 {
 	if($.cookie('blah') != null)
 	{
-		$.post("loadall")
-		.done(function(data) 
-		{
-			eventData = data;
-			populateEvents();
-		});
+		 $.post("loadall")
+		 .done(function(data) 
+		 {
+			 if(!data["error"])
+			 {
+				 eventData = data["data"];
+				 populateEvents();
+				 removeGlobalAlert();
+			 }
+			 else addGlobalAlert();
+		 });
 	}
 	else { document.location = "/login"; }
 }

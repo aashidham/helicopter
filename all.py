@@ -112,7 +112,12 @@ def application(environ, start_response):
 			tasks = sorted(tasks,key=lambda k:k.start)
 			toReturn = combine.combine(events,tasks)
 			toReturn = [x.__dict__ for x in toReturn]
-			response = Response(json.dumps(toReturn), mimetype="application/json")
+			globalError = False
+			for elem in toReturn:
+				if elem["type"] != 3:
+					if elem["start"] < currtime:
+						globalError = True
+			response = Response(json.dumps({"error":globalError,"data":toReturn}), mimetype="application/json")
 			return response(environ, start_response)
 		if "startstop" in request.path:
 			email = request.cookies.get("blah")
