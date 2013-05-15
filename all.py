@@ -84,8 +84,6 @@ def application(environ, start_response):
 				curr_tasks = json.loads(result['tasks'])
 				curr_tasks[position] = {"summary":name,"deadline":deadline,"duration":duration}
 				c.execute("insert or replace into events (tasks,email,data) values (:tasks,:email,(select data from events where email=:email))",{"email":email,"tasks":json.dumps(curr_tasks)})
-			response.status_code = 301
-			response.location = "/static/app.html#list"
 			return response(environ, start_response)
 		if "loadtasks" in request.path:
 			email = request.cookies.get("blah")

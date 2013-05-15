@@ -90,6 +90,7 @@ function countdownDecrement(div,pos)
 function populateAll()
 {
 	$("#task_container").empty();
+	editing = false;
 	if($.cookie('blah') != null)
 	{
 		$.post("loadtasks")
@@ -144,7 +145,7 @@ function populateAll()
 							$.post("edittask",{"position":pos,"deadline":$("#list_edit #deadline").val(),"hours":$("#list_edit #duration_hours").val(),"minutes":$("#list_edit #duration_minutes").val(),"name":$("#list_edit #name").val()})
 							.done(function(data)
 							{
-								history.back();
+								$.mobile.navigate("#list");
 								populateAll();
 							});
 						});
@@ -212,7 +213,7 @@ $(function(){
 			$.post("addtask",{"deadline":$("#list_new #deadline").val(),"hours":$("#list_new #duration_hours").val(),"minutes":$("#list_new #duration_minutes").val(),"name":$("#list_new #name").val()})
 			.done(function(data)
 			{
-				history.back();
+				$.mobile.navigate("#list");
 				populateAll();
 			});
 		});

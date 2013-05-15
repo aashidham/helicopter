@@ -62,8 +62,10 @@ def combine(events,tasks):
 		currEvent = events[eventCounter]
 		eventsAndTasks.append(currEvent)
 		eventCounter = eventCounter+1
+	"""
 	for elem in eventsAndTasks:
 		print elem
+	"""
 	#adjust tasks
 	currCounter = len(eventsAndTasks)-1
 	while(currCounter > 0):
