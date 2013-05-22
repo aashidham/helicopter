@@ -62,7 +62,7 @@ def application(environ, start_response):
 			for c in manage_db():
 				c.execute("select * from events where email=?",(email,))
 				result = c.fetchone()
-				if result['tasks'] is not None:
+				if result is not None and result['tasks'] is not None:
 					curr_tasks = json.loads(result['tasks'])
 					del curr_tasks[position]
 					c.execute("insert or replace into events (tasks,email,data) values (:tasks,:email,(select data from events where email=:email))",{"email":email,"tasks":json.dumps(curr_tasks)})

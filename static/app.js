@@ -45,11 +45,22 @@ function addEvent(data)
 		var eventLength = Math.floor((end - start)/900000) * .25;
 		var height = ($("#hour_label").height() + 1)*eventLength - (paddingTop + 1);
 		var top = ($("#hour_label").height() + 1)*eventStart;
-		jQuery("<div/>",
-		{id:"event",
-		text:data["name"],
-		}).css({"top":top+"px","height":height+"px",opacity:0.7}).corner("5px")
-		.appendTo("#events");
+		if(data["type"] != 3)
+		{
+			jQuery("<div/>",
+			{id:"event",
+			text:data["name"] + " ("+start.format("h:i A")+ "-"+end.format("h:i A")+")",
+			}).css({"top":top+"px","height":height+"px",opacity:0.7,background:"purple"}).corner("5px")
+			.appendTo("#events");
+		}
+		else
+		{
+			jQuery("<div/>",
+			{id:"event",
+			text:data["name"] + " ("+start.format("h:i A")+ "-"+end.format("h:i A")+")",
+			}).css({"top":top+"px","height":height+"px",opacity:0.7}).corner("5px")
+			.appendTo("#events");		
+		}
 	}
 }
 

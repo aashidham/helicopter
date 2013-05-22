@@ -94,10 +94,10 @@ def combine(events,tasks):
 					curr.start = curr.end - currDuration
 				#elif prev.isTask() and curr.isEvent() and prev.end > curr.end:
 				elif prev.isTask() and prev.end > curr.end:
-					secondBlockDuration = prev.end - curr.start
-					prev.end = curr.start
+					firstBlockDuration = curr.end - prev.start
+					prev.start = curr.end
 					prev.type = 2
-					split = Thing({"summary":prev.name,"start":curr.end,"end":curr.end + secondBlockDuration},True)
+					split = Thing({"summary":prev.name,"start":curr.start-firstBlockDuration,"end":curr.start},True)
 					print "created split task (in second case)"
 					eventsAndTasks.append(split)
 				else:
@@ -107,5 +107,8 @@ def combine(events,tasks):
 				eventsAndTasks.sort(key=startDate)
 			else:
 				prevCounter = prevCounter-1
-		currCounter = currCounter-1				
+		currCounter = currCounter-1	
+
+	for elem in eventsAndTasks:
+		print elem
 	return eventsAndTasks
