@@ -42,7 +42,9 @@ function addEvent(data)
 	if(curr.toDateString() == start.toDateString() && curr.toDateString() == end.toDateString())
 	{
 		var eventStart = convertHM(start);
-		var eventLength = Math.floor((end - start)/900000) * .25;
+		var eventLength = Math.round((end - start)/900000) * .25;
+		if(eventLength > 0)
+		{
 		var height = ($("#hour_label").height() + 1)*eventLength - (paddingTop + 1);
 		var top = ($("#hour_label").height() + 1)*eventStart;
 		if(data["type"] != 3)
@@ -60,6 +62,7 @@ function addEvent(data)
 			text:data["name"] + " ("+start.format("h:i A")+ "-"+end.format("h:i A")+")",
 			}).css({"top":top+"px","height":height+"px",opacity:0.7}).corner("5px")
 			.appendTo("#events");		
+		}
 		}
 	}
 }
