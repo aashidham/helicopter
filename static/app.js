@@ -144,6 +144,11 @@ function populateAll()
 				{
 					alertPane.show();
 				}
+				var repeatPane = $('<div class="alert_task"><a data-role="button" data-inline="true" data-theme="d" data-icon="forward" data-iconpos="notext" class="ui-btn-right"></a></div>');
+				if('repeat' in data[i])
+				{
+					repeatPane.show();
+				}
 				var outer = jQuery("<div/>",{class:"task",id:"task"});
 				var content = jQuery("<div/>",{id:"task_content"});
 				var inner1 = jQuery("<div/>",{id:"task_title_1",text:data[i]["summary"]});
@@ -157,7 +162,13 @@ function populateAll()
 				content.append(inner3);
 				outer.append(alertPane);
 				outer.append(editPane);
+				outer.append(repeatPane);
 				outer.append(content);
+				repeatPane.click(function()
+				{
+					var pos = $(this).parent().index();
+					console.log(pos);
+				});
 				content.click(function(){
 					var pos = $(this).parent().index();
 					if(editing || 'showAlertPane' in taskData[pos])
@@ -170,7 +181,7 @@ function populateAll()
 						$("#list_edit #duration_minutes").val(Math.floor((duration/60) % 60));
 						$("#submit_edittask").click(function()
 						{
-							$.post("edittask",{"position":pos,"deadline":$("#list_edit #deadline").val(),"hours":$("#list_edit #duration_hours").val(),"minutes":$("#list_edit #duration_minutes").val(),"name":$("#list_edit #name").val()})
+							$.post("edittask",{"position":pos,"deadline":$("#list_edit #deadline").val(),"hours":$("#list_edit #duration_hours").val(),"minutes":$("#list_edit #duration_minutes").val(),"name":$("#list_edit #name").val(),"repeat":$('#list_edit input[type=radio]:checked').attr("value")})
 							.done(function(data)
 							{
 								$.mobile.navigate("#list");
@@ -238,7 +249,7 @@ $(function(){
 		});
 		$("#submit_newtask").click(function()
 		{
-			$.post("addtask",{"deadline":$("#list_new #deadline").val(),"hours":$("#list_new #duration_hours").val(),"minutes":$("#list_new #duration_minutes").val(),"name":$("#list_new #name").val()})
+			$.post("addtask",{"deadline":$("#list_new #deadline").val(),"hours":$("#list_new #duration_hours").val(),"minutes":$("#list_new #duration_minutes").val(),"name":$("#list_new #name").val(),"repeat":$('#list_new input[type=radio]:checked').attr("value")})
 			.done(function(data)
 			{
 				$.mobile.navigate("#list");

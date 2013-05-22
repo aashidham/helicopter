@@ -41,7 +41,8 @@ def application(environ, start_response):
 			hours = int(request.form["hours"])
 			minutes = int(request.form["minutes"])
 			duration = 3600*hours + 60*minutes
-			new_task = {"summary":name,"deadline":deadline,"duration":duration}
+			repeat = request.form["repeat"]
+			new_task = {"summary":name,"deadline":deadline,"duration":duration,"repeat":repeat}
 			email = request.cookies.get("blah")
 			for c in manage_db():
 				c.execute("select * from events where email=?",(email,))
@@ -76,13 +77,15 @@ def application(environ, start_response):
 			minutes = int(request.form["minutes"])
 			duration = 3600*hours + 60*minutes
 			position = int(request.form["position"])
+			repeat = request.form["repeat"]
+			new_task = {"summary":name,"deadline":deadline,"duration":duration,"repeat":repeat}
 			email = request.cookies.get("blah")
 			response = Response()
 			for c in manage_db():
 				c.execute("select * from events where email=?",(email,))
 				result = c.fetchone()
 				curr_tasks = json.loads(result['tasks'])
-				curr_tasks[position] = {"summary":name,"deadline":deadline,"duration":duration}
+				curr_tasks[position] = new_task
 				c.execute("insert or replace into events (tasks,email,data) values (:tasks,:email,(select data from events where email=:email))",{"email":email,"tasks":json.dumps(curr_tasks)})
 			return response(environ, start_response)
 		if "loadtasks" in request.path:

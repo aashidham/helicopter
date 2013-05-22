@@ -120,29 +120,8 @@
         </div>
     </div>
   </div>
-  
-  <div data-role="page" id="list_new">
-    <div data-role="header" data-theme="b" data-position="fixed" data-id="footer">
-      <h1>New Task</h1>
-      <div id="back"><a href="#list" data-role="button" data-inline="true" data-theme="b" data-icon="arrow-l" data-iconpos="left" class="ui-btn-left">Back</a></div>
-      <div id="submit_newtask"><a data-role="button" data-inline="true" data-theme="b" class="ui-btn-right">Submit</a></div>
-    </div>
-    <div data-role="content">
-			<div style="font-size:25px; text-align:center;">Name</div>
-			<input id="name" placeholder="Write that book!"></input>
-			<div style="font-size:25px; text-align:center;">Deadline</div>
-			<input id="deadline" type="datetime"></input>
-			<div style="font-size:25px; text-align:center;">Duration</div>
-			<div id="duration">
-			Hours:
-			<input style="width:80%;margin:auto;" type="number" pattern="[0-9]*" id="duration_hours"></input>
-			</div>
-			<div id="duration">
-			Minutes:
-			<input style="width:80%;margin:auto;" type="number" pattern="[0-9]*" id="duration_minutes"></input>
-			</div>
-    </div>
-  </div>
+
+
   <div data-role="page" id="list_edit">
     <div data-role="header" data-theme="b" data-position="fixed" data-id="footer">
       <h1>Edit Task</h1>
@@ -163,9 +142,57 @@
 			Minutes:
 			<input style="width:80%;margin:auto;" type="number" pattern="[0-9]*" id="duration_minutes"></input>
 			</div>
+			
+			<div style="font-size:25px; text-align:center;">Repeat Tasks</div>
+			<div style="width:80%;margin:auto;text-align:center;">
+			<fieldset data-role="controlgroup" data-type="horizontal">
+					<input type="radio" name="radio-view" id="radio-view-a" value="none" checked="checked"/>
+					<label for="radio-view-a">None</label>
+					<input type="radio" name="radio-view" id="radio-view-b" value="daily"  />
+					<label for="radio-view-b">Daily</label>
+					<input type="radio" name="radio-view" id="radio-view-c" value="weekly"  />
+					<label for="radio-view-c">Weekly</label>
+			</fieldset>
+			</div>
+
     </div>
   </div>
 
+  <div data-role="page" id="list_new">
+    <div data-role="header" data-theme="b" data-position="fixed" data-id="footer">
+      <h1>New Task</h1>
+      <div id="back"><a href="#list" data-role="button" data-inline="true" data-theme="b" data-icon="arrow-l" data-iconpos="left" class="ui-btn-left">Back</a></div>
+      <div id="submit_edittask"><a data-role="button" data-inline="true" data-theme="b" class="ui-btn-right">Submit</a></div>
+    </div>
+    <div data-role="content">
+			<div style="font-size:25px; text-align:center;">Name</div>
+			<input id="name" placeholder="Write that book!"></input>
+			<div style="font-size:25px; text-align:center;">Deadline</div>
+			<input id="deadline" type="datetime"></input>
+			<div style="font-size:25px; text-align:center;">Duration</div>
+			<div id="duration">
+			Hours:
+			<input style="width:80%;margin:auto;" type="number" pattern="[0-9]*" id="duration_hours"></input>
+			</div>
+			<div id="duration">
+			Minutes:
+			<input style="width:80%;margin:auto;" type="number" pattern="[0-9]*" id="duration_minutes"></input>
+			</div>
+			
+			<div style="font-size:25px; text-align:center;">Repeat Tasks</div>
+			<div style="width:80%;margin:auto;text-align:center;">
+			<fieldset data-role="controlgroup" data-type="horizontal">
+					<input type="radio" name="radio-view" id="radio-view-d" value="none" checked="checked"/>
+					<label for="radio-view-d">None</label>
+					<input type="radio" name="radio-view" id="radio-view-e" value="daily"  />
+					<label for="radio-view-e">Daily</label>
+					<input type="radio" name="radio-view" id="radio-view-f" value="weekly"  />
+					<label for="radio-view-f">Weekly</label>
+			</fieldset>
+			</div>
+
+    </div>
+  </div>
 
     </body>
 </html>
