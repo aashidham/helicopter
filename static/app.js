@@ -2,6 +2,7 @@ var eventData = null; //only non-null upon POST request
 var taskData = null;
 var editing = false;
 var globalAlert = false;
+var firstBlock = null;
 var tid = null;
 
 function removeGlobalAlert()
@@ -82,6 +83,7 @@ function populateEvents()
 				if(!data["error"])
 				{
 					eventData = data["data"];
+					firstBlock = data["firstBlock"];
 					for(var i = 0; i < eventData.length; i++) {addEvent(eventData[i]);}
 					removeGlobalAlert();
 				}
@@ -107,6 +109,7 @@ function populateEventsRefresh()
 			 if(!data["error"])
 			 {
 				 eventData = data["data"];
+				 firstBlock = data["firstBlock"];
 				 populateEvents();
 				 removeGlobalAlert();
 			 }

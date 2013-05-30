@@ -117,7 +117,13 @@ def application(environ, start_response):
 				if elem["type"] != 3:
 					if elem["start"] < currtime:
 						globalError = True
-			response = Response(json.dumps({"error":globalError,"data":toReturn}), mimetype="application/json")
+			first_block_names = []
+			for elem in toReturn:
+				if "firstBlock" in elem:
+					first_block_names.append(elem["name"])
+			import pdb; pdb.set_trace()
+			first_block_names = list(set(first_block_names))
+			response = Response(json.dumps({"error":globalError,"data":toReturn,"firstBlock":first_block_names}), mimetype="application/json")
 			return response(environ, start_response)
 		if "startstop" in request.path:
 			email = request.cookies.get("blah")
