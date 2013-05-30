@@ -2,6 +2,7 @@ var eventData = null; //only non-null upon POST request
 var taskData = null;
 var editing = false;
 var firstBlock = null;
+var freetime = null;
 var tid = null;
 
 function convertHM(date)
@@ -57,6 +58,7 @@ function populateEvents()
 			{
 				eventData = data["data"];
 				firstBlock = data["firstBlock"];
+				if ("freetime" in data) { freetime = data["freetime"]; }
 				for(var i = 0; i < eventData.length; i++) {addEvent(eventData[i]);}
 			});
 		}
@@ -78,6 +80,7 @@ function populateEventsRefresh()
 		 {
 			eventData = data["data"];
 			firstBlock = data["firstBlock"];
+			if ("freetime" in data) { freetime = data["freetime"]; }
 			populateEvents();
 		 });
 	}
@@ -90,11 +93,25 @@ function durationToStr(duration)
 	return Math.floor(duration/3600) + "h:" + Math.floor((duration/60) % 60) + "m:" + duration % 60 + "s";
 }
 
-function countdownDecrement(div,pos)
+function onTick()
 {
-	//console.log("in timer " + div.val());
-	taskData[pos]["duration"] = Math.max(taskData[pos]["duration"] - 1,0);
-	div.text(durationToStr(taskData[pos]["duration"]));
+	for(var i = 0; i < taskData.length; i++)
+	{
+		if('startedTime' in taskData[i])
+		{
+			pos = i;
+			div = $("#task_container").children().eq(pos).find("#task_duration_2");
+			div.text(durationToStr(taskData[pos]["duration"] - (new Date().getTime() / 1000 - taskData[pos]["startedTime"])));
+		}
+	}
+	if (freetime != null)
+	{
+		if(freetime > 0)
+		{ $("#global_alert").text(durationToStr(freetime/1000) + " free time left."); }
+		else
+		{ $("#global_alert").text(durationToStr(freetime/1000) + " time overdue. You don't have enough free time to complete the tasks listed. Reduce the duration by the amount in the red to make your task list feasible again."); }
+	}
+	populateEventsRefresh();
 }
 
 //contact the server to refresh tasks and events
@@ -169,21 +186,10 @@ function populateAll()
 						$.post("startstop",{"position":pos})
 						.done(function(data)
 						{
-							if(tid != null)
-							{
-								clearInterval(tid);
-								tid = null;
-							}
 							populateAll();
 						});
 					}
 				});
-				if('startedTime' in data[i])
-				{
-					pos = i;
-					taskData[pos]["duration"] = taskData[pos]["duration"] - (new Date().getTime() / 1000 - taskData[pos]["startedTime"])
-					tid = setInterval(function(){countdownDecrement($("#task_container").children().eq(pos).find("#task_duration_2"),pos);},1000);
-				}
 
 			}
 			$("#task_container").trigger('create');
@@ -235,4 +241,5 @@ $(function(){
 			editing = !editing;
 		});
 		populateAll();
+		setInterval(function(){onTick();},1000);
 });

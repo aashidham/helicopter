@@ -112,13 +112,34 @@ def application(environ, start_response):
 			tasks = sorted(tasks,key=lambda k:k.end)
 			toReturn = combine.combine(events,tasks)
 			toReturn = [x.__dict__ for x in toReturn]
-			first_block_names = []
+			
+			freetime = 0
+			latestTime = 0
 			for elem in toReturn:
-				if "firstBlock" in elem:
-					first_block_names.append(elem["name"])
-			first_block_names = list(set(first_block_names))
-			response = Response(json.dumps({"data":toReturn,"firstBlock":first_block_names}), mimetype="application/json")
-			return response(environ, start_response)
+				if elem["type"] != 3:
+					latestTime = elem["start"]
+					break
+			if latestTime == 0:
+				response = Response(json.dumps({"data":toReturn,"firstBlock":[]}), mimetype="application/json")
+				return response(environ, start_response)
+			else:
+				if latestTime < currtime:
+					freetime = latestTime - currtime
+				else:
+					blocking_duration = 0
+					for elem in toReturn:
+						if elem["end"] < latestTime:
+							blocking_duration = blocking_duration + elem["end"] - elem["start"]
+							if elem["start"] < currtime:
+								blocking_duration = blocking_duration - (currtime - elem["start"])
+					freetime = latestTime - currtime - blocking_duration
+				first_block_names = []
+				for elem in toReturn:
+					if "firstBlock" in elem:
+						first_block_names.append(elem["name"])
+				first_block_names = list(set(first_block_names))
+				response = Response(json.dumps({"data":toReturn,"firstBlock":first_block_names,"freetime":freetime}), mimetype="application/json")
+				return response(environ, start_response)
 		if "startstop" in request.path:
 			email = request.cookies.get("blah")
 			position = int(request.form["position"])
