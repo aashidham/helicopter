@@ -1,33 +1,8 @@
 var eventData = null; //only non-null upon POST request
 var taskData = null;
 var editing = false;
-var globalAlert = false;
 var firstBlock = null;
 var tid = null;
-
-function removeGlobalAlert()
-{
-	if(globalAlert)
-	{
-		console.log("in removeGlobalAlert");
-		globalAlert = false;
-		$("#global_alert").remove();
-		$("#task_container").css("height","100%");
-	}
-}
-
-function addGlobalAlert()
-{
-	if(!globalAlert) //only should be called once in a session
-	{
-		var toAdd = $('<div id="global_alert">You dont have enough free time to complete the tasks listed. Reduce the duration of your tasks to make your task list feasible again.</div>');
-		toAdd.insertAfter($("#task_container"));
-		$("#task_container").css("height","80%");
-		globalAlert = true;
-		$("#events").empty();
-	}
-	else console.log("ASSERT");
-}
 
 function convertHM(date)
 {
@@ -75,19 +50,14 @@ function populateEvents()
 	$("#events").empty();
 	if($.cookie('blah') != null)
 	{
-		if(eventData == null && !globalAlert)
+		if(eventData == null)
 		{
 			$.post("loadall")
 			.done(function(data) 
 			{
-				if(!data["error"])
-				{
-					eventData = data["data"];
-					firstBlock = data["firstBlock"];
-					for(var i = 0; i < eventData.length; i++) {addEvent(eventData[i]);}
-					removeGlobalAlert();
-				}
-				else addGlobalAlert();
+				eventData = data["data"];
+				firstBlock = data["firstBlock"];
+				for(var i = 0; i < eventData.length; i++) {addEvent(eventData[i]);}
 			});
 		}
 		else if(eventData != null)
@@ -106,14 +76,9 @@ function populateEventsRefresh()
 		 $.post("loadall")
 		 .done(function(data) 
 		 {
-			 if(!data["error"])
-			 {
-				 eventData = data["data"];
-				 firstBlock = data["firstBlock"];
-				 populateEvents();
-				 removeGlobalAlert();
-			 }
-			 else addGlobalAlert();
+			eventData = data["data"];
+			firstBlock = data["firstBlock"];
+			populateEvents();
 		 });
 	}
 	else { document.location = "/login"; }
@@ -127,7 +92,7 @@ function durationToStr(duration)
 
 function countdownDecrement(div,pos)
 {
-	console.log("in timer " + div.val());
+	//console.log("in timer " + div.val());
 	taskData[pos]["duration"] = Math.max(taskData[pos]["duration"] - 1,0);
 	div.text(durationToStr(taskData[pos]["duration"]));
 }
@@ -217,7 +182,7 @@ function populateAll()
 				{
 					pos = i;
 					taskData[pos]["duration"] = taskData[pos]["duration"] - (new Date().getTime() / 1000 - taskData[pos]["startedTime"])
-					tid = setInterval(function(){countdownDecrement(inner2,pos);},1000);
+					tid = setInterval(function(){countdownDecrement($("#task_container").children().eq(pos).find("#task_duration_2"),pos);},1000);
 				}
 
 			}
@@ -233,6 +198,7 @@ $(function(){
 		$("#day_header").css("line-height",height+"px");
 		height = $("#hour_label").height();
 		$("#hour_label span").css("line-height",height+"px");
+		
 		
 		if ($("#day_header span").html() === "")
 		{

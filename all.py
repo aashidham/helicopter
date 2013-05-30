@@ -112,18 +112,12 @@ def application(environ, start_response):
 			tasks = sorted(tasks,key=lambda k:k.end)
 			toReturn = combine.combine(events,tasks)
 			toReturn = [x.__dict__ for x in toReturn]
-			globalError = False
-			for elem in toReturn:
-				if elem["type"] != 3:
-					if elem["start"] < currtime:
-						globalError = True
 			first_block_names = []
 			for elem in toReturn:
 				if "firstBlock" in elem:
 					first_block_names.append(elem["name"])
-			import pdb; pdb.set_trace()
 			first_block_names = list(set(first_block_names))
-			response = Response(json.dumps({"error":globalError,"data":toReturn,"firstBlock":first_block_names}), mimetype="application/json")
+			response = Response(json.dumps({"data":toReturn,"firstBlock":first_block_names}), mimetype="application/json")
 			return response(environ, start_response)
 		if "startstop" in request.path:
 			email = request.cookies.get("blah")
@@ -132,9 +126,10 @@ def application(environ, start_response):
 			for c in manage_db():
 				c.execute("select tasks from events where email=?",(email,))
 				tasks = json.loads(c.fetchone()['tasks'])
-				for task in tasks:
+				for idx,task in enumerate(tasks):
 					if "startedTime" in task:
-						taskInProgress = True
+						if idx == position:
+							taskInProgress = True
 						task["duration"] = max(task["duration"] - (time.time() - task["startedTime"]),0)
 						del task["startedTime"]
 						c.execute("insert or replace into events (tasks,email,data) values (:tasks,:email,(select data from events where email=:email))",{"email":email,"tasks":json.dumps(tasks)})
