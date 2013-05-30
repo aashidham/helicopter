@@ -88,9 +88,25 @@ def combine(events,tasks):
 					tempPrev = tempPrev-1
 				tempCurr = tempCurr-1		
 		currCounter = currCounter-1
-	
+		
+	#determine firstBlock
+	if len(tasks) > 0:
+		tasks[0].firstBlock = True
+		if len(tasks) > 1:
+			counter = 1
+			while counter < len(tasks):
+				print counter
+				if tasks[counter].start == tasks[counter-1].end:
+					tasks[counter].firstBlock = True
+					counter = counter + 1
+				elif tasks[counter].isSplitTask() and tasks[counter-1].isSplitTask():
+					tasks[counter].firstBlock = True
+					counter = counter + 1
+				else:
+					break
+
 	#do final merging
-	eventsAndTasks = events
+	eventsAndTasks = events			
 	for t in tasks:
 		eventsAndTasks.append(t)
 	eventsAndTasks.sort(key=startDate)
