@@ -86,32 +86,39 @@ def combine(events,tasks):
 			if prev.conflictsWith(curr):
 				if prev.isEvent() and curr.isEvent():
 					prevCounter = prevCounter-1
-				elif prev.isTask() and curr.isEvent():
-					if curr.end < prev.end:
-						firstBlockDuration = curr.end - prev.start
-						prev.start = curr.end
-						prev.type = 2
-						split = Thing({"summary":prev.name,"start":curr.start-firstBlockDuration,"end":curr.start},True)
-						print "created split task (in case 6)"
-						eventsAndTasks.append(split)
-					else:
-						movePrevUp(curr,prev)
-				elif prev.isEvent() and curr.isTask():
-					if prev.end < curr.end:
-						firstBlockDuration = prev.end - curr.start
-						curr.start = prev.end
-						curr.type = 2
-						split = Thing({"summary":curr.name,"start":prev.start-firstBlockDuration,"end":prev.start},True)
-						print "created split task (in case 8)"
-						eventsAndTasks.append(split)
-					else:
-						moveCurrUp(curr,prev)
 				else:
-					if prev.end < curr.end:
-						movePrevUp(curr,prev)
+					if prev.isTask() and curr.isEvent():
+						if curr.end < prev.end:
+							firstBlockDuration = curr.end - prev.start
+							prev.start = curr.end
+							prev.type = 2
+							split = Thing({"summary":prev.name,"start":curr.start-firstBlockDuration,"end":curr.start},True)
+							print "created split task (in case 6)"
+							eventsAndTasks.append(split)
+						else:
+							movePrevUp(curr,prev)
+							print "cases 4 or 5"
+					elif prev.isEvent() and curr.isTask():
+						if prev.end < curr.end:
+							firstBlockDuration = prev.end - curr.start
+							curr.start = prev.end
+							curr.type = 2
+							split = Thing({"summary":curr.name,"start":prev.start-firstBlockDuration,"end":prev.start},True)
+							print "created split task (in case 8)"
+							eventsAndTasks.append(split)
+						else:
+							moveCurrUp(curr,prev)
+							print "cases 7 or 9"
 					else:
-						moveCurrUp(curr,prev)
-				eventsAndTasks.sort(key=startDate)
+						if prev.end < curr.end:
+							print "case 2"
+							movePrevUp(curr,prev)
+						else:
+							print "case 1 or 3"
+							moveCurrUp(curr,prev)
+					eventsAndTasks.sort(key=startDate)
+					currCounter = len(eventsAndTasks)-1
+					prevCounter = currCounter-1
 			else:
 				prevCounter = prevCounter-1
 		currCounter = currCounter-1	
