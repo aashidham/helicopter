@@ -109,7 +109,7 @@ def application(environ, start_response):
 			events = [combine.Thing(x) for x in events]
 			tasks = [combine.Thing(x) for x in tasks]
 			events = sorted(events,key=lambda k:k.start)
-			tasks = sorted(tasks,key=lambda k:k.start)
+			tasks = sorted(tasks,key=lambda k:k.end)
 			toReturn = combine.combine(events,tasks)
 			toReturn = [x.__dict__ for x in toReturn]
 			globalError = False

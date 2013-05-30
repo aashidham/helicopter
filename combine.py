@@ -7,6 +7,9 @@ from feed.date.rfc3339 import *
 def startDate(thing):
 	return thing.start
 
+def endDate(thing):
+	return thing.end
+
 class Thing(object):	
 	def __init__(self, taskOrEvent, isSplitTask=None):
 		self.name = taskOrEvent["summary"]
@@ -25,7 +28,7 @@ class Thing(object):
 	
 
 	def conflictsWith(self,other):
-		if(self.end > other.start):
+		if(self.end > other.start and self.start < other.end):
 			return True
 		else:
 			return False
@@ -51,79 +54,44 @@ def moveCurrUp(curr,prev):
 	curr.start = curr.end - currDuration	
 
 def combine(events,tasks):
-	eventsAndTasks = []
-	# merge events and tasks
-	taskCounter = 0;
-	eventCounter = 0;
-	while(taskCounter < len(tasks) and eventCounter < len(events)):
-		currTask = tasks[taskCounter]
-		currEvent = events[eventCounter]
-		if currTask.start < currEvent.start:
-			eventsAndTasks.append(currTask)
-			taskCounter = taskCounter+1
-		else:
-			eventsAndTasks.append(currEvent)
-			eventCounter = eventCounter+1
-	while(taskCounter < len(tasks)):
-		currTask = tasks[taskCounter]
-		eventsAndTasks.append(currTask)
-		taskCounter = taskCounter+1
-	while(eventCounter < len(events)):
-		currEvent = events[eventCounter]
-		eventsAndTasks.append(currEvent)
-		eventCounter = eventCounter+1
-	"""
-	for elem in eventsAndTasks:
-		print elem
-	"""
-	#adjust tasks
-	currCounter = len(eventsAndTasks)-1
-	while(currCounter > 0):
-		prevCounter = currCounter-1
-		while(prevCounter >= 0):
-			curr = eventsAndTasks[currCounter]
-			prev = eventsAndTasks[prevCounter]
-			if prev.conflictsWith(curr):
-				if prev.isEvent() and curr.isEvent():
-					prevCounter = prevCounter-1
-				else:
-					if prev.isTask() and curr.isEvent():
-						if curr.end < prev.end:
-							firstBlockDuration = curr.end - prev.start
-							prev.start = curr.end
-							prev.type = 2
-							split = Thing({"summary":prev.name,"start":curr.start-firstBlockDuration,"end":curr.start},True)
-							print "created split task (in case 6)"
-							eventsAndTasks.append(split)
-						else:
-							movePrevUp(curr,prev)
-							print "cases 4 or 5"
-					elif prev.isEvent() and curr.isTask():
-						if prev.end < curr.end:
-							firstBlockDuration = prev.end - curr.start
-							curr.start = prev.end
-							curr.type = 2
-							split = Thing({"summary":curr.name,"start":prev.start-firstBlockDuration,"end":prev.start},True)
-							print "created split task (in case 8)"
-							eventsAndTasks.append(split)
-						else:
-							moveCurrUp(curr,prev)
-							print "cases 7 or 9"
-					else:
-						if prev.end < curr.end:
-							print "case 2"
-							movePrevUp(curr,prev)
-						else:
-							print "case 1 or 3"
-							moveCurrUp(curr,prev)
-					eventsAndTasks.sort(key=startDate)
-					currCounter = len(eventsAndTasks)-1
-					prevCounter = currCounter-1
+	currCounter = len(tasks)-1
+	while(currCounter >= 0):
+		while True:
+			curr = tasks[currCounter]
+			intersect_events = []
+			for event in events:
+				if event.conflictsWith(curr):
+					intersect_events.append(event)
+			if len(intersect_events) == 0:
+				break
 			else:
-				prevCounter = prevCounter-1
-		currCounter = currCounter-1	
-	"""
-	for elem in eventsAndTasks:
-		print elem
-	"""
+				intersect_events.sort(key=endDate,reverse=True)
+				event = intersect_events[0]
+				if event.start < curr.end and curr.end < event.end:
+					moveCurrUp(curr,event)
+				else:
+					firstBlockDuration = event.end - curr.start
+					curr.start = event.end
+					curr.type = 2
+					split = Thing({"summary":curr.name,"start":event.start-firstBlockDuration,"end":event.start},True)
+					print "created split task"
+					tasks.insert(currCounter,split)
+		if currCounter != 0:
+			tempCurr = currCounter
+			while(tempCurr > 0):
+				tempPrev = tempCurr - 1
+				while(tempPrev >= 0):
+					prev = tasks[tempPrev]
+					curr = tasks[tempCurr]
+					if prev.conflictsWith(curr):
+						movePrevUp(curr,prev)
+					tempPrev = tempPrev-1
+				tempCurr = tempCurr-1		
+		currCounter = currCounter-1
+	
+	#do final merging
+	eventsAndTasks = events
+	for t in tasks:
+		eventsAndTasks.append(t)
+	eventsAndTasks.sort(key=startDate)
 	return eventsAndTasks

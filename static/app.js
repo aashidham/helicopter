@@ -39,7 +39,8 @@ function addEvent(data)
 	var end = new Date(data["end"]);
 	var curr = new Date($("#day_header span").html());
 	var paddingTop = 10; //this is unfortunately hard-coded at the moment
-	if(curr.toDateString() == start.toDateString() && curr.toDateString() == end.toDateString())
+	//if(curr.toDateString() == start.toDateString() && curr.toDateString() == end.toDateString())
+	if(curr.toDateString() == start.toDateString())
 	{
 		var eventStart = convertHM(start);
 		var eventLength = Math.round((end - start)/900000) * .25;
