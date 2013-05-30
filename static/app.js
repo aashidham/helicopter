@@ -95,6 +95,7 @@ function durationToStr(duration)
 
 function onTick()
 {
+	var firstBlockActivated = false;
 	for(var i = 0; i < taskData.length; i++)
 	{
 		if('startedTime' in taskData[i])
@@ -102,9 +103,11 @@ function onTick()
 			pos = i;
 			div = $("#task_container").children().eq(pos).find("#task_duration_2");
 			div.text(durationToStr(taskData[pos]["duration"] - (new Date().getTime() / 1000 - taskData[pos]["startedTime"])));
+			if ($.inArray(taskData[i]["summary"],firstBlock) == 0)
+			{ firstBlockActivated = true; }
 		}
 	}
-	if (freetime != null)
+	if (freetime != null && !firstBlockActivated)
 	{
 		if(freetime > 0)
 		{ $("#global_alert").text(durationToStr(freetime/1000) + " free time left."); }
