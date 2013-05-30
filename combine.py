@@ -35,10 +35,20 @@ class Thing(object):
 	def isSplitTask(self):
 		return self.type == SPLIT_TASK
 	def isTask(self):
-		return self.type == TASK
+		return self.type == TASK or self.type == SPLIT_TASK
 			
 	def __repr__(self):
 		return self.name + " | start:" + timestamp_from_tf(self.start/1000) + " | end:" + timestamp_from_tf(self.end/1000) + " | type:" +str(self.type)
+
+def movePrevUp(curr,prev):
+	prevDuration = prev.end - prev.start
+	prev.end = curr.start
+	prev.start = prev.end - prevDuration
+	
+def moveCurrUp(curr,prev):
+	currDuration = curr.end - curr.start
+	curr.end = prev.start
+	curr.start = curr.end - currDuration	
 
 def combine(events,tasks):
 	eventsAndTasks = []
@@ -76,39 +86,37 @@ def combine(events,tasks):
 			if prev.conflictsWith(curr):
 				if prev.isEvent() and curr.isEvent():
 					prevCounter = prevCounter-1
-				elif prev.isEvent():
-					if curr.end > prev.end:
+				elif prev.isTask() and curr.isEvent():
+					if curr.end < prev.end:
+						firstBlockDuration = curr.end - prev.start
+						prev.start = curr.end
+						prev.type = 2
+						split = Thing({"summary":prev.name,"start":curr.start-firstBlockDuration,"end":curr.start},True)
+						print "created split task (in case 6)"
+						eventsAndTasks.append(split)
+					else:
+						movePrevUp(curr,prev)
+				elif prev.isEvent() and curr.isTask():
+					if prev.end < curr.end:
 						firstBlockDuration = prev.end - curr.start
 						curr.start = prev.end
 						curr.type = 2
 						split = Thing({"summary":curr.name,"start":prev.start-firstBlockDuration,"end":prev.start},True)
-						print "created split task"
+						print "created split task (in case 8)"
 						eventsAndTasks.append(split)
 					else:
-						currDuration = curr.end - curr.start
-						curr.end = prev.start
-						curr.start = curr.end - currDuration					
-				elif prev.isSplitTask() and curr.isTask():
-					currDuration = curr.end - curr.start
-					curr.end = prev.start
-					curr.start = curr.end - currDuration
-				#elif prev.isTask() and curr.isEvent() and prev.end > curr.end:
-				elif prev.isTask() and prev.end > curr.end:
-					firstBlockDuration = curr.end - prev.start
-					prev.start = curr.end
-					prev.type = 2
-					split = Thing({"summary":prev.name,"start":curr.start-firstBlockDuration,"end":curr.start},True)
-					print "created split task (in second case)"
-					eventsAndTasks.append(split)
+						moveCurrUp(curr,prev)
 				else:
-					prevDuration = prev.end - prev.start
-					prev.end = curr.start
-					prev.start = prev.end - prevDuration
+					if prev.end < curr.end:
+						movePrevUp(curr,prev)
+					else:
+						moveCurrUp(curr,prev)
 				eventsAndTasks.sort(key=startDate)
 			else:
 				prevCounter = prevCounter-1
 		currCounter = currCounter-1	
-
+	"""
 	for elem in eventsAndTasks:
 		print elem
+	"""
 	return eventsAndTasks
