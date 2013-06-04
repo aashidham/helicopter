@@ -156,7 +156,7 @@ function resetSubmitTaskHandler()
 	$("#submit_newtask").click(function()
 	{
 		console.log("A");
-		$.post("addtask",{"deadline":$("#list_new #deadline").val(),"hours":$("#list_new #duration_hours").val(),"minutes":$("#list_new #duration_minutes").val(),"name":$("#list_new #name").val()})
+		$.post("addtask",{"deadline":$("#list_new #deadline").val(),"hours":$("#list_new #duration_hours").val(),"minutes":$("#list_new #duration_minutes").val(),"name":$("#list_new #name").val(),"repeat":$('#list_new input[type=radio]:checked').attr("value")})
 		.done(function(data)
 		{
 			populateAll();
@@ -307,16 +307,6 @@ $(function(){
 			resetListNew();
 			resetSubmitTaskHandler();
 			$.mobile.navigate("#list_new");
-		});
-		$("#submit_newtask").click(function()
-		{
-			console.log("A");
-			$.post("addtask",{"deadline":$("#list_new #deadline").val(),"hours":$("#list_new #duration_hours").val(),"minutes":$("#list_new #duration_minutes").val(),"name":$("#list_new #name").val(),"repeat":$('#list_new input[type=radio]:checked').attr("value")})
-			.done(function(data)
-			{
-				populateAll();
-				$.mobile.navigate("#list");
-			});
 		});
 		$("#edit").click(function()
 		{

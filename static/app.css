@@ -35,8 +35,7 @@
 			width: 100%
 			background: green;
 			height: 90%;
-			overflow: hidden;
-			overflow-y:scroll;
+			overflow: auto;
 			-webkit-overflow-scrolling: touch;
 		}
 		#task_container
