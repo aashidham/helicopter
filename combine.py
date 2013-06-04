@@ -83,7 +83,7 @@ def combine(events,tasks):
 				while(tempPrev >= 0):
 					prev = tasks[tempPrev]
 					curr = tasks[tempCurr]
-					if prev.conflictsWith(curr):
+					if prev.end > curr.start:
 						movePrevUp(curr,prev)
 					tempPrev = tempPrev-1
 				tempCurr = tempCurr-1		
