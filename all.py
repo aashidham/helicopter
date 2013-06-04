@@ -83,6 +83,8 @@ def application(environ, start_response):
 				result = c.fetchone()
 				curr_tasks = json.loads(result['tasks'])
 				curr_tasks[position] = {"summary":name,"deadline":deadline,"duration":duration}
+				curr_tasks.sort(key=lambda x: x["duration"], reverse=True)
+				curr_tasks.sort(key=lambda x: x["deadline"])
 				c.execute("insert or replace into events (tasks,email,data) values (:tasks,:email,(select data from events where email=:email))",{"email":email,"tasks":json.dumps(curr_tasks)})
 			return response(environ, start_response)
 		if "loadtasks" in request.path:

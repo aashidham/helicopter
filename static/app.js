@@ -117,6 +117,31 @@ function onTick()
 	populateEventsRefresh();
 }
 
+function resetListNew()
+{
+	$("#list_new #name").val("Write that Book!");
+	var deadline = new Date();
+	deadline.setDate(deadline.getDate() + 1);
+	$("#list_new #deadline").val(deadline.toISOString());
+	$("#list_new #duration_hours").val("1");
+	$("#list_new #duration_minutes").val("0");
+}
+
+function resetSubmitTaskHandler()
+{
+	$("#submit_newtask").unbind('click');
+	$("#submit_newtask").click(function()
+	{
+		console.log("A");
+		$.post("addtask",{"deadline":$("#list_new #deadline").val(),"hours":$("#list_new #duration_hours").val(),"minutes":$("#list_new #duration_minutes").val(),"name":$("#list_new #name").val()})
+		.done(function(data)
+		{
+			populateAll();
+			$.mobile.navigate("#list");
+		});
+	});
+}
+
 //contact the server to refresh tasks and events
 function populateAll()
 {
@@ -165,22 +190,25 @@ function populateAll()
 					var pos = $(this).parent().index();
 					if(editing || 'showAlertPane' in taskData[pos])
 					{
-						$("#list_edit #name").val(taskData[pos]["summary"]);
+						$("#list_new #name").val(taskData[pos]["summary"]);
 						var deadline = new Date(parseInt(taskData[pos]["deadline"]));
-						$("#list_edit #deadline").val(deadline.toISOString());
+						$("#list_new #deadline").val(deadline.toISOString());
 						var duration = parseInt(taskData[pos]["duration"]);
-						$("#list_edit #duration_hours").val(Math.floor(duration/3600));
-						$("#list_edit #duration_minutes").val(Math.floor((duration/60) % 60));
-						$("#submit_edittask").click(function()
+						$("#list_new #duration_hours").val(Math.floor(duration/3600));
+						$("#list_new #duration_minutes").val(Math.floor((duration/60) % 60));
+						$("#submit_newtask").unbind('click');
+						$("#submit_newtask").click(function()
 						{
-							$.post("edittask",{"position":pos,"deadline":$("#list_edit #deadline").val(),"hours":$("#list_edit #duration_hours").val(),"minutes":$("#list_edit #duration_minutes").val(),"name":$("#list_edit #name").val()})
+							console.log("B");
+							$.post("edittask",{"position":pos,"deadline":$("#list_new #deadline").val(),"hours":$("#list_new #duration_hours").val(),"minutes":$("#list_new #duration_minutes").val(),"name":$("#list_new #name").val()})
 							.done(function(data)
 							{
 								$.mobile.navigate("#list");
+								resetSubmitTaskHandler();
 								populateAll();
 							});
 						});
-						document.location = "#list_edit";
+						$.mobile.navigate("#list_new");
 					}
 					else
 					{
@@ -229,13 +257,20 @@ $(function(){
 			$("#day_header span").html(date2.toDateString());
 			populateEvents();
 		});
+		$("#new_task").click(function()
+		{
+			resetListNew();
+			resetSubmitTaskHandler();
+			$.mobile.navigate("#list_new");
+		});
 		$("#submit_newtask").click(function()
 		{
+			console.log("A");
 			$.post("addtask",{"deadline":$("#list_new #deadline").val(),"hours":$("#list_new #duration_hours").val(),"minutes":$("#list_new #duration_minutes").val(),"name":$("#list_new #name").val()})
 			.done(function(data)
 			{
-				$.mobile.navigate("#list");
 				populateAll();
+				$.mobile.navigate("#list");
 			});
 		});
 		$("#edit").click(function()
