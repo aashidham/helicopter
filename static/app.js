@@ -96,24 +96,30 @@ function durationToStr(duration)
 function onTick()
 {
 	var firstBlockActivated = false;
-	for(var i = 0; i < taskData.length; i++)
+	if(taskData != null)
 	{
-		if('startedTime' in taskData[i])
+		for(var i = 0; i < taskData.length; i++)
 		{
-			pos = i;
-			div = $("#task_container").children().eq(pos).find("#task_duration_2");
-			div.text(durationToStr(taskData[pos]["duration"] - (new Date().getTime() / 1000 - taskData[pos]["startedTime"])));
-			if ($.inArray(taskData[i]["summary"],firstBlock) == 0)
-			{ firstBlockActivated = true; }
+			if('startedTime' in taskData[i])
+			{
+				pos = i;
+				div = $("#task_container").children().eq(pos).find("#task_duration_2");
+				div.text(durationToStr(taskData[pos]["duration"] - (new Date().getTime() / 1000 - taskData[pos]["startedTime"])));
+				if ($.inArray(taskData[i]["summary"],firstBlock) == 0)
+				{ firstBlockActivated = true; }
+			}
 		}
 	}
 	var inEvent = false;
 	var now = new Date();
-	for(var i = 0; i < eventData.length; i++)
+	if(eventData != null)
 	{
-		if (eventData[i]["start"] < now && now < eventData[i]["end"])
+		for(var i = 0; i < eventData.length; i++)
 		{
-			inEvent = true;
+			if (eventData[i]["start"] < now && now < eventData[i]["end"] && eventData[i]["type"] == 3)
+			{
+				inEvent = true;
+			}
 		}
 	}
 	if (freetime != null)
@@ -123,9 +129,9 @@ function onTick()
 		else
 		{ $("#global_alert").text(durationToStr(freetime/1000) + " time overdue. "); }
 	}
-	if(!inEvent && !firstBlockActivated)
+	if(!inEvent && !firstBlockActivated && freetime != null)
 	{
-		freetime = freetime -1;
+		freetime = freetime-1000;
 	}
 }
 
@@ -137,6 +143,11 @@ function resetListNew()
 	$("#list_new #deadline").val(deadline.toISOString());
 	$("#list_new #duration_hours").val("1");
 	$("#list_new #duration_minutes").val("0");
+	try {
+	$("#none").click();
+	$("input[type='radio']").checkboxradio("refresh");
+	}
+	catch(err){}
 }
 
 function resetSubmitTaskHandler()
@@ -184,6 +195,11 @@ function populateAll()
 				{
 					alertPane.show();
 				}
+				var repeatPane = $('<div class="repeat_task"><a data-role="button" data-inline="true" data-theme="d" data-icon="forward" data-iconpos="notext" class="ui-btn-right"></a></div>');
+				if (data[i]["repeat"] != "none")
+				{
+					repeatPane.show();
+				}
 				var outer = jQuery("<div/>",{class:"task",id:"task"});
 				var content = jQuery("<div/>",{id:"task_content"});
 				var inner1 = jQuery("<div/>",{id:"task_title_1",text:data[i]["summary"]});
@@ -195,9 +211,20 @@ function populateAll()
 				content.append(inner1);
 				content.append(inner2);
 				content.append(inner3);
-				outer.append(alertPane);
 				outer.append(editPane);
+				outer.append(alertPane);
+				outer.append(repeatPane);
 				outer.append(content);
+				repeatPane.click(function()
+				{
+					var pos = $(this).parent().index();
+					$.post("repeattask",{"position":pos})
+					.done(function(data)
+					{
+						populateAll();
+					});
+
+				});
 				content.click(function(){
 					var pos = $(this).parent().index();
 					if(editing || 'showAlertPane' in taskData[pos])
@@ -208,11 +235,17 @@ function populateAll()
 						var duration = parseInt(taskData[pos]["duration"]);
 						$("#list_new #duration_hours").val(Math.floor(duration/3600));
 						$("#list_new #duration_minutes").val(Math.floor((duration/60) % 60));
+						try 
+						{
+							$("#" + taskData[pos]["repeat"]).click();
+							$("input[type='radio']").checkboxradio("refresh");
+						}
+						catch (err) {}
 						$("#submit_newtask").unbind('click');
 						$("#submit_newtask").click(function()
 						{
 							console.log("B");
-							$.post("edittask",{"position":pos,"deadline":$("#list_new #deadline").val(),"hours":$("#list_new #duration_hours").val(),"minutes":$("#list_new #duration_minutes").val(),"name":$("#list_new #name").val()})
+							$.post("edittask",{"position":pos,"deadline":$("#list_new #deadline").val(),"hours":$("#list_new #duration_hours").val(),"minutes":$("#list_new #duration_minutes").val(),"name":$("#list_new #name").val(),"repeat":$('#list_new input[type=radio]:checked').attr("value")})
 							.done(function(data)
 							{
 								$.mobile.navigate("#list");
@@ -278,7 +311,7 @@ $(function(){
 		$("#submit_newtask").click(function()
 		{
 			console.log("A");
-			$.post("addtask",{"deadline":$("#list_new #deadline").val(),"hours":$("#list_new #duration_hours").val(),"minutes":$("#list_new #duration_minutes").val(),"name":$("#list_new #name").val()})
+			$.post("addtask",{"deadline":$("#list_new #deadline").val(),"hours":$("#list_new #duration_hours").val(),"minutes":$("#list_new #duration_minutes").val(),"name":$("#list_new #name").val(),"repeat":$('#list_new input[type=radio]:checked').attr("value")})
 			.done(function(data)
 			{
 				populateAll();

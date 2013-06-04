@@ -131,6 +131,19 @@
 			width: 100%;
 			border-bottom: 1px dashed #505050;
 		}
+
+		.repeat_task {
+			position: relative;
+			height:100%;
+			float: left;
+			padding-left: 10px;
+			display: none;
+		}
+		
+		.repeat_task a {
+			top: 38px;
+		}
+
 		
 		.alert_task {
 			position: relative;
