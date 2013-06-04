@@ -6,6 +6,7 @@ from operator import attrgetter
 import get_events, datetime
 import combine
 import time
+import itertools
 
 from feed.date.rfc3339 import *
 
@@ -16,6 +17,23 @@ def manage_db():
 	yield c
 	conn.commit()
 	conn.close()
+
+def coalesce_blocking(l):
+	while True:
+		hit = False
+		for a,b in itertools.combinations(range(len(l)),2):
+			if l[a]["end"] > l[b]["start"] and l[a]["start"] < l[b]["end"]:
+				hit = True
+				elema = l[a]
+				elemb = l[b]
+				del l[b]
+				del l[a]
+				l.append({"start":min(elema["start"],elemb["start"]),"end":max(elema["end"],elemb["end"])})
+				break
+		if not hit:
+			break
+	return l
+
 	
 def application(environ, start_response):
 	request = Request(environ)
@@ -129,8 +147,12 @@ def application(environ, start_response):
 					freetime = latestTime - currtime
 				else:
 					blocking_duration = 0
+					blocking_events = []
 					for elem in toReturn:
-						if elem["end"] < latestTime:
+						if elem["end"] < latestTime and currtime < elem["end"]:
+							blocking_events.append(elem)
+					blocking_events = coalesce_blocking(blocking_events)
+					for elem in blocking_events:
 							blocking_duration = blocking_duration + elem["end"] - elem["start"]
 							if elem["start"] < currtime:
 								blocking_duration = blocking_duration - (currtime - elem["start"])

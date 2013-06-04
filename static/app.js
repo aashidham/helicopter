@@ -107,14 +107,26 @@ function onTick()
 			{ firstBlockActivated = true; }
 		}
 	}
-	if (freetime != null && !firstBlockActivated)
+	var inEvent = false;
+	var now = new Date();
+	for(var i = 0; i < eventData.length; i++)
+	{
+		if (eventData[i]["start"] < now && now < eventData[i]["end"])
+		{
+			inEvent = true;
+		}
+	}
+	if (freetime != null)
 	{
 		if(freetime > 0)
 		{ $("#global_alert").text(durationToStr(freetime/1000) + " free time left."); }
 		else
-		{ $("#global_alert").text(durationToStr(freetime/1000) + " time overdue. You don't have enough free time to complete the tasks listed. Reduce the duration by the amount in the red to make your task list feasible again."); }
+		{ $("#global_alert").text(durationToStr(freetime/1000) + " time overdue. "); }
 	}
-	populateEventsRefresh();
+	if(!inEvent && !firstBlockActivated)
+	{
+		freetime = freetime -1;
+	}
 }
 
 function resetListNew()
