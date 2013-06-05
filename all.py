@@ -54,13 +54,17 @@ def application(environ, start_response):
 			response.set_cookie("blah",email,expires=datetime.datetime.now() + datetime.timedelta(days=1))
 			return response(environ, start_response)
 		if "addtask" in request.path:
-			deadline = tf_from_timestamp(request.form["deadline"]) * 1000
-			name = request.form["name"]
-			hours = int(request.form["hours"])
-			minutes = int(request.form["minutes"])
+			response = Response()
+			try:
+				deadline = tf_from_timestamp(request.form["deadline"]) * 1000
+				name = request.form["name"]
+				hours = int(request.form["hours"])
+				minutes = int(request.form["minutes"])
+				repeat = request.form["repeat"]
+			except:
+				response.status_code = 500
+				return response(environ, start_response)
 			duration = 3600*hours + 60*minutes
-			new_task = {"summary":name,"deadline":deadline,"duration":duration}
-			repeat = request.form["repeat"]
 			new_task = {"summary":name,"deadline":deadline,"duration":duration,"repeat":repeat}
 			email = request.cookies.get("blah")
 			for c in manage_db():
@@ -69,11 +73,14 @@ def application(environ, start_response):
 				result = c.fetchone()
 				if result['tasks'] is not None:
 					curr_tasks = json.loads(result['tasks'])
+				for task in curr_tasks:
+					if name == task["summary"]:
+						response.status_code = 500
+						return response(environ, start_response)
 				curr_tasks.append(new_task)
 				curr_tasks.sort(key=lambda x: x["duration"], reverse=True)
 				curr_tasks.sort(key=lambda x: x["deadline"])
 				c.execute("insert or replace into events (tasks,email,data) values (:tasks,:email,(select data from events where email=:email))",{"email":email,"tasks":json.dumps(curr_tasks)})
-			response = Response("a")
 			return response(environ, start_response)
 		if "removetasks" in request.path:
 			position = int(request.form["position"])
@@ -90,19 +97,27 @@ def application(environ, start_response):
 					response.status_code = 404
 			return response(environ, start_response)
 		if "edittask" in request.path:
-			deadline = tf_from_timestamp(request.form["deadline"]) * 1000
-			name = request.form["name"]
-			hours = int(request.form["hours"])
-			minutes = int(request.form["minutes"])
-			duration = 3600*hours + 60*minutes
-			position = int(request.form["position"])
-			repeat = request.form["repeat"]
-			email = request.cookies.get("blah")
 			response = Response()
+			try:
+				deadline = tf_from_timestamp(request.form["deadline"]) * 1000
+				name = request.form["name"]
+				hours = int(request.form["hours"])
+				minutes = int(request.form["minutes"])
+				repeat = request.form["repeat"]
+				position = int(request.form["position"])
+			except:
+				response.status_code = 500
+				return response(environ, start_response)
+			duration = 3600*hours + 60*minutes
+			email = request.cookies.get("blah")
 			for c in manage_db():
 				c.execute("select * from events where email=?",(email,))
 				result = c.fetchone()
 				curr_tasks = json.loads(result['tasks'])
+				for pos,task in enumerate(curr_tasks):
+					if pos != position and name == task["summary"]:
+						response.status_code = 500
+						return response(environ, start_response)
 				curr_tasks[position] = {"summary":name,"deadline":deadline,"duration":duration,"repeat":repeat}
 				curr_tasks.sort(key=lambda x: x["duration"], reverse=True)
 				curr_tasks.sort(key=lambda x: x["deadline"])

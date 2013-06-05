@@ -161,6 +161,10 @@ function resetSubmitTaskHandler()
 		{
 			populateAll();
 			$.mobile.navigate("#list");
+		})
+		.fail(function(data)
+		{
+			alert("You neglected to enter something correctly on this form. (Remember, names are unique!)");
 		});
 	});
 }
@@ -251,6 +255,10 @@ function populateAll()
 								$.mobile.navigate("#list");
 								resetSubmitTaskHandler();
 								populateAll();
+							})
+							.fail(function(data)
+							{
+								alert("You neglected to enter something correctly on this form. (Remember, names are unique!)");
 							});
 						});
 						$.mobile.navigate("#list_new");
