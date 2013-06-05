@@ -101,14 +101,16 @@
 		#event {
 			position: absolute;
 			background: red;
-			padding-left:10px;
-			padding-top:10px;
+			padding-left:5px;
+			padding-top:5px;
 			top:51px;
 			height:40px;
 			left: 0px;
 			right: 0px;
 			color: white;
 			text-shadow: none;
+			line-height: 1px;
+			font-size: xx-small;
 		}
 		#hour_label {
 			position: relative;

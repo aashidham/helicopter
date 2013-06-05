@@ -20,27 +20,27 @@ function addEvent(data)
 	if(curr.toDateString() == start.toDateString())
 	{
 		var eventStart = convertHM(start);
-		var eventLength = Math.round((end - start)/900000) * .25;
+		var eventLength = (end - start)/3600000;
 		if(eventLength > 0)
 		{
-		var height = ($("#hour_label").height() + 1)*eventLength - (paddingTop + 1);
-		var top = ($("#hour_label").height() + 1)*eventStart;
-		if(data["type"] != 3)
-		{
-			jQuery("<div/>",
-			{id:"event",
-			text:data["name"] + " ("+start.format("h:i A")+ "-"+end.format("h:i A")+")",
-			}).css({"top":top+"px","height":height+"px",opacity:0.7,background:"purple"}).corner("5px")
-			.appendTo("#events");
-		}
-		else
-		{
-			jQuery("<div/>",
-			{id:"event",
-			text:data["name"] + " ("+start.format("h:i A")+ "-"+end.format("h:i A")+")",
-			}).css({"top":top+"px","height":height+"px",opacity:0.7}).corner("5px")
-			.appendTo("#events");		
-		}
+			var height = ($("#hour_label").height() + 1)*eventLength - (paddingTop + 1);
+			var top = ($("#hour_label").height() + 1)*eventStart;
+			if(data["type"] != 3)
+			{
+				jQuery("<div/>",
+				{id:"event",
+				text:data["name"] + " ("+start.format("h:i A")+ "-"+end.format("h:i A")+")",
+				}).css({"top":top+"px","height":height+"px",opacity:0.7,background:"purple"}).corner("5px")
+				.appendTo("#events");
+			}
+			else
+			{
+				jQuery("<div/>",
+				{id:"event",
+				text:data["name"] + " ("+start.format("h:i A")+ "-"+end.format("h:i A")+")",
+				}).css({"top":top+"px","height":height+"px",opacity:0.7}).corner("5px")
+				.appendTo("#events");		
+			}
 		}
 	}
 }
@@ -105,7 +105,7 @@ function onTick()
 				pos = i;
 				div = $("#task_container").children().eq(pos).find("#task_duration_2");
 				div.text(durationToStr(taskData[pos]["duration"] - (new Date().getTime() / 1000 - taskData[pos]["startedTime"])));
-				if ($.inArray(taskData[i]["summary"],firstBlock) == 0)
+				if ($.inArray(taskData[i]["summary"],firstBlock) != -1)
 				{ firstBlockActivated = true; }
 			}
 		}
