@@ -56,7 +56,8 @@ def application(environ, start_response):
 		if "addtask" in request.path:
 			response = Response()
 			try:
-				deadline = tf_from_timestamp(request.form["deadline"]) * 1000
+				deadline = tf_from_timestamp(request.form["deadline"]+"-07:00") * 1000
+				print request.form["deadline"]
 				name = request.form["name"]
 				hours = int(request.form["hours"])
 				minutes = int(request.form["minutes"])
@@ -99,7 +100,7 @@ def application(environ, start_response):
 		if "edittask" in request.path:
 			response = Response()
 			try:
-				deadline = tf_from_timestamp(request.form["deadline"]) * 1000
+				deadline = tf_from_timestamp(request.form["deadline"]+"-07:00") * 1000
 				name = request.form["name"]
 				hours = int(request.form["hours"])
 				minutes = int(request.form["minutes"])
